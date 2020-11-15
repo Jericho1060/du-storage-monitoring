@@ -1,7 +1,7 @@
 # du-storage-monitoring
 a simple storage monitoring for Dual Universe
 
-![Img001]()
+![Img001](https://github.com/Jericho1060/du-storage-monitoring/blob/main/du-storage-monitoring.png?raw=true)
 
 It's displaying on a screen the quantity and the percent fill of containers or hub.
 
