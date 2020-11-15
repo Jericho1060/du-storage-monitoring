@@ -15,6 +15,8 @@ For a Hub, you must use that pattern: `<prefix>_<itemName>_<containserSize>_<amo
 
 By default, the script is grouping all containers or hub that contains the same items on a single line and add the values. See option if you want to disable it.
 
+By default, the list is sorted by item tier and then by name
+
 # Installation
 
 ### required elements
