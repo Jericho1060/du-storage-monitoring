@@ -20,13 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b180fbc0-1cb9-4e51-90e7-e95612fb8c9b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/source/library/start_1.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/source/library/start_2.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/source/library/start_3.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/source/library/start_4.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/source/unit/start.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/source/unit/tick_refreshScreen.lua" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +41,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -58,7 +55,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1605466570001</updated>
-      <workItem from="1605466571086" duration="372000" />
+      <workItem from="1605466571086" duration="1416000" />
     </task>
     <servers />
   </component>
@@ -75,5 +72,8 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>
