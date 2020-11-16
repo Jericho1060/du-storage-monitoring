@@ -1,10 +1,19 @@
 local storage_elements = {}
-
 for _,id in pairs(elementsIdList) do
     local elementType = core.getElementTypeById(id)
     if elementType:lower():find("container") then
         local elementName = core.getElementNameById(id)
-        if elementName:lower():find(containerMonitoringPrefix:lower()) then
+        if
+        elementName:lower():find(containerMonitoringPrefix_screen1:lower())
+                or elementName:lower():find(containerMonitoringPrefix_screen2:lower())
+                or elementName:lower():find(containerMonitoringPrefix_screen3:lower())
+                or elementName:lower():find(containerMonitoringPrefix_screen4:lower())
+                or elementName:lower():find(containerMonitoringPrefix_screen5:lower())
+                or elementName:lower():find(containerMonitoringPrefix_screen6:lower())
+                or elementName:lower():find(containerMonitoringPrefix_screen7:lower())
+                or elementName:lower():find(containerMonitoringPrefix_screen8:lower())
+                or elementName:lower():find(containerMonitoringPrefix_screen9:lower())
+        then
             local container = {}
             local splitted = strSplit(elementName, '_')
             local name = splitted[2]
@@ -54,6 +63,8 @@ for _,id in pairs(elementsIdList) do
             local totalMass = core.getElementMassById(id)
             local contentMassKg = totalMass - container_empty_mass
             container.id = id
+            container.realName = elementName
+            container.prefix = splitted[1] .. "_"
             container.name = name
             container.ingredient = ingredient
             container.quantity = contentMassKg / ingredient.mass
@@ -67,16 +78,17 @@ for _,id in pairs(elementsIdList) do
     end
 end
 
--- group by name
+-- group by name and screen
 local groupped = {}
 if groupByItemName then
     for _,v in pairs(storage_elements) do
-        if groupped[v.ingredient.name] then
-            groupped[v.ingredient.name].quantity = groupped[v.ingredient.name].quantity + v.quantity
-            groupped[v.ingredient.name].volume = groupped[v.ingredient.name].volume + v.volume
-            groupped[v.ingredient.name].percent = (v.ingredient.volume * groupped[v.ingredient.name].quantity) * 100 / groupped[v.ingredient.name].volume
+        local prefix = v.prefix
+        if groupped[prefix .. v.ingredient.name] then
+            groupped[prefix .. v.ingredient.name].quantity = groupped[prefix .. v.ingredient.name].quantity + v.quantity
+            groupped[prefix .. v.ingredient.name].volume = groupped[prefix .. v.ingredient.name].volume + v.volume
+            groupped[prefix .. v.ingredient.name].percent = (v.ingredient.volume * groupped[prefix .. v.ingredient.name].quantity) * 100 / groupped[prefix .. v.ingredient.name].volume
         else
-            groupped[v.ingredient.name] = v
+            groupped[prefix .. v.ingredient.name] = v
         end
     end
 else
@@ -99,7 +111,7 @@ for k,v in pairs(tiers) do
     table.sort(tiers[k], function(a,b) return a.ingredient.name:lower() < b.ingredient.name:lower() end)
 end
 
-if screen ~= nil then
+if #screens > 0 then
     local css = [[
         <style>
     	   * {
@@ -116,10 +128,10 @@ if screen ~= nil then
             }
     	   table {
     		  width:100vw;
-    		  border:3px solid orange;
+    		  border:2px solid orange;
     	   }
     	   th, td {
-    		  border:3px solid orange;
+    		  border:2px solid orange;
 		  }
             .text-orangered{color:orangered;}
             .bg-success{background-color: #28a745;}
@@ -129,48 +141,53 @@ if screen ~= nil then
             .bg-primary{background-color:#007bff;}
         </style>
     ]]
-    local html = [[
-    	<table>
-    		<thead>
-    			<tr>
-    				<th>Tier</th>
-    				<th>Container Name</th>
-    				<th>Capacity</th>
-    				<th>Item Name</th>
-    				<th>Amount</th>
-    				<th>Percent Fill</th>
-    			</tr>
-    		</thead>
-    		<tbody>
-    ]]
+    for index, screen in pairs(screens) do
+        local prefix = prefixes[index]
+        local html = [[
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tier</th>
+                        <th>Container Name</th>
+                        <th>Capacity</th>
+                        <th>Item Name</th>
+                        <th>Amount</th>
+                        <th>Percent Fill</th>
+                    </tr>
+                </thead>
+                <tbody>
+        ]]
 
-    for tier_k,tier in pairs(tiers) do
-        for _,container in pairs(tier) do
-            local gauge_color_class = "bg-success"
-            local text_color_class = ""
-            if container.percent < container_fill_red_level then
-                gauge_color_class = "bg-danger"
-            elseif  container.percent < container_fill_yellow_level then
-                gauge_color_class = "bg-warning"
-                text_color_class = "text-orangered"
+        for tier_k,tier in pairs(tiers) do
+            for _,container in pairs(tier) do
+                if container.prefix:lower():find(prefix:lower()) then
+                    local gauge_color_class = "bg-success"
+                    local text_color_class = ""
+                    if container.percent < container_fill_red_level then
+                        gauge_color_class = "bg-danger"
+                    elseif  container.percent < container_fill_yellow_level then
+                        gauge_color_class = "bg-warning"
+                        text_color_class = "text-orangered"
+                    end
+                    html = html .. [[
+                        <tr>
+                            <th>]] .. tier_k .. [[</th>
+                            <th>]] .. container.name .. [[</th>
+                            <th>]] .. format_number(container.volume) .. [[L</th>
+                            <th>]] .. container.ingredient.name .. [[</th>
+                            <th>]] .. format_number(utils.round(container.quantity * 100) / 100) .. [[</th>
+                            <th style="position:relative;width: ]] .. tostring((750/1920)*100) .. [[vw;">
+                                <div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;">&nbsp;</div>
+                                <div class="]] .. text_color_class .. [[" style="position:absolute;width:100%;top:50%;font-weight:bold;transform:translateY(-50%);">
+                                    ]] .. format_number(utils.round(container.percent * 100) / 100) .. [[%
+                                </div>
+                            </th>
+                        </tr>
+                    ]]
+                end
             end
-            html = html .. [[
-                <tr>
-                    <th>]] .. tier_k .. [[</th>
-                    <th>]] .. container.name .. [[</th>
-                    <th>]] .. format_number(container.volume) .. [[L</th>
-                    <th>]] .. container.ingredient.name .. [[</th>
-                    <th>]] .. format_number(utils.round(container.quantity * 100) / 100) .. [[</th>
-                    <th style="position:relative;width: ]] .. tostring((750/1920)*100) .. [[vw;">
-                        <div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;">&nbsp;</div>
-                        <div class="]] .. text_color_class .. [[" style="position:absolute;width:100%;top:50%;font-weight:bold;transform:translateY(-50%);">
-                            ]] .. format_number(utils.round(container.percent * 100) / 100) .. [[%
-                        </div>
-                    </th>
-                </tr>
-            ]]
         end
+        html = html .. [[</tbody></table>]]
+        screen.setHTML(css .. html)
     end
-    html = html .. [[</tbody></table>]]
-    screen.setHTML(css .. html)
 end
