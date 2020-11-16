@@ -3,6 +3,11 @@ a simple storage monitoring for Dual Universe
 
 ![Img001](https://github.com/Jericho1060/du-storage-monitoring/blob/main/du-storage-monitoring.png?raw=true)
 
+# Discord Server
+
+You can join me on Discord for help or suggestions or requests by folowing that link : https://discord.jericho1060.com
+
+#Description
 It's displaying on a screen the quantity and the percent fill of containers or hub.
 
 It can support up to 9 screens and chose what is display on each (group feature)
@@ -51,3 +56,8 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `container_fill_red_level`: The percent fill below gauge will be red
 - `container_fill_yellow_level`: The percent fill below gauge will be yellow
 - `groupByItemName`: if enabled, this will group all entries with the same item name (enabled by default)
+
+
+# Support or donation
+
+if you like it, [<img src="https://github.com/Jericho1060/DU-Industry-HUD/blob/main/ressources/images/ko-fi.png?raw=true" width="150">](https://ko-fi.com/jericho1060)
