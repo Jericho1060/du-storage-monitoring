@@ -22,7 +22,7 @@ PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the perce
 gaugeWidth = 750 --export: the width of the gauge in pixel for a full hd screen (1920 * 1080)
 fontSize = 1.5 --export: the size of the text for all the screen
 borderColor = "orange" --export: the color of the table border
-verticalMode = false --//export: enable to use on a vertical screen (not yet ready)
+verticalMode = false --export: enable to use on a vertical screen (not yet ready)
 showContainerNameColumn = false --export: show or not the column "Container Name"
 showContainerCapacityColumn = false --export: show or not the column "Container Total Capacity"
 

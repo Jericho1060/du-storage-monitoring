@@ -116,7 +116,7 @@ if #screens > 0 then
     local widthUnit = "vw"
     local heightUnit = "vh"
     if verticalMode then
-        gaugePercentWidth = (gaugeWidth/1080)*100
+        gaugePercentWidth = ((gaugeWidth*1080/1920)/1080)*100
         widthUnit = "vh"
         heightUnit = "vw"
     end
@@ -126,17 +126,14 @@ if #screens > 0 then
     		  font-size: ]] .. tostring(fontSize) .. [[vw;
     		  text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
     	   }
-            .screenContent {
-                position:absolute;
-                top:0;
-                left:0;
-    		  bottom: 0;
-    		  right:0;
-                /*width: 100]] .. widthUnit .. [[;
-                heigth:100]] .. heightUnit .. [[;*/
-            }
     	   table { width:100]] .. widthUnit .. [[; ]]
-    if verticalMode then css = css .. "transform:rotate(-90deg);" end
+    if verticalMode then
+        css = css .. [[
+        	transform:rotate(-90deg);
+        	transform-origin:0% 0%;
+        	margin-top:100vh;
+        ]]
+    end
     css = css .. [[}
     	   th, td { border:2px solid orange; }
             .text-orange{color:orange;}
