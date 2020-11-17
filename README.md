@@ -61,7 +61,9 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `gaugeWidth`: the width of the gauge in pixel for a full hd screen (1920 * 1080)
 - `fontSize`: the size of the text for all the screen
 - `borderColor`: the color of the table border
-
+- `verticalMode`: enable to use on a vertical screen (not yet ready)
+- `showContainerNameColumn`: show or not the column "Container Name"
+- `showContainerCapacityColumn`: show or not the column "Container Total Capacity"
 
 # Support or donation
 
