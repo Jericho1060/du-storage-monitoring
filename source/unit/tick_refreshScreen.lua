@@ -124,6 +124,7 @@ if #screens > 0 then
         <style>
     	   * {
     		  font-size: ]] .. tostring(fontSize) .. [[vw;
+    		  text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
     	   }
             .screenContent {
                 position:absolute;
@@ -138,9 +139,8 @@ if #screens > 0 then
     if verticalMode then css = css .. "transform:rotate(-90deg);" end
     css = css .. [[}
     	   th, td { border:2px solid orange; }
-            .text-orangered{color:orangered;}
+            .text-orange{color:orange;}
     	   .text-red{color:red;}
-    	   .text-orangered, text-red{font-weight:500 !important;}
             .bg-success{background-color: #28a745;}
             .bg-danger{background-color:#dc3545;}
             .bg-warning{background-color:#ffc107;}
@@ -176,7 +176,7 @@ if #screens > 0 then
                         text_color_class = "text-red"
                     elseif  container.percent < container_fill_yellow_level then
                         gauge_color_class = "bg-warning"
-                        text_color_class = "text-orangered"
+                        text_color_class = "text-orange"
                     end
                     html = html .. [[
                         <tr>
