@@ -56,7 +56,8 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `container_fill_red_level`: The percent fill below gauge will be red
 - `container_fill_yellow_level`: The percent fill below gauge will be yellow
 - `groupByItemName`: if enabled, this will group all entries with the same item name (enabled by default)
-
+- `QuantityRoundedDecimals`: maximum of decimals displayed for the quantity value
+- `PercentRoundedDecimals`: maximum of decimals displayed for the percent fill value
 - `gaugeWidth`: the width of the gauge in pixel for a full hd screen (1920 * 1080)
 - `fontSize`: the size of the text for all the screen
 - `borderColor`: the color of the table border

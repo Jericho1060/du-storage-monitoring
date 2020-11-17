@@ -183,17 +183,17 @@ if #screens > 0 then
                             <th>]] .. tier_k .. [[</th>
                         ]]
                     if showContainerNameColumn then
-                        html = html .. "<th>" .. container.name .. "</th>"
+                        html = html .. "<th>" .. container.realName .. "</th>"
                     end
                     if showContainerCapacityColumn then
-                        html = html .. "<th>" .. format_number(container.volume) .. "</th>"
+                        html = html .. "<th>" .. format_number(utils.round(container.volume)) .. "</th>"
                     end
                     html = html .. [[<th>]] .. container.ingredient.name .. [[</th>
-                            <th>]] .. format_number(utils.round(container.quantity * 100) / 100) .. [[</th>
+                            <th>]] .. format_number(utils.round(container.quantity * (10 ^ QuantityRoundedDecimals)) / (10 ^ QuantityRoundedDecimals)) .. [[</th>
                             <th style="position:relative;width: ]] .. tostring(gaugePercentWidth) .. widthUnit .. [[;">
                                 <div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;">&nbsp;</div>
                                 <div class="]] .. text_color_class .. [[" style="position:absolute;width:100%;top:50%;font-weight:bold;transform:translateY(-50%);">
-                                    ]] .. format_number(utils.round(container.percent * 100) / 100) .. [[%
+                                    ]] .. format_number(utils.round(container.percent * (10 ^ PercentRoundedDecimals)) / (10 ^ PercentRoundedDecimals)) .. [[%
                                 </div>
                             </th>
                         </tr>
