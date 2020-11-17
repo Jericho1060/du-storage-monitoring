@@ -112,6 +112,14 @@ for k,v in pairs(tiers) do
 end
 
 if #screens > 0 then
+    local gaugePercentWidth = (gaugeWidth/1920)*100
+    local widthUnit = "vw"
+    local heightUnit = "vh"
+    if verticalMode then
+        gaugePercentWidth = (gaugeWidth/1080)*100
+        widthUnit = "vh"
+        heightUnit = "vw"
+    end
     local css = [[
         <style>
     	   * {
@@ -121,10 +129,14 @@ if #screens > 0 then
                 position:absolute;
                 top:0;
                 left:0;
-                width: 100vw;
-                heigth:100vh;
+    		  bottom: 0;
+    		  right:0;
+                /*width: 100]] .. widthUnit .. [[;
+                heigth:100]] .. heightUnit .. [[;*/
             }
-    	   table { width:100vw; }
+    	   table { width:100]] .. widthUnit .. [[; ]]
+    if verticalMode then css = css .. "transform:rotate(-90deg);" end
+    css = css .. [[}
     	   th, td { border:2px solid orange; }
             .text-orangered{color:orangered;}
     	   .text-red{color:red;}
@@ -143,10 +155,11 @@ if #screens > 0 then
                 <thead>
                     <tr>
                         <th>Tier</th>
-                        <th>Container Name</th>
-                        <th>Capacity</th>
-                        <th>Item Name</th>
-                        <th>Amount</th>
+        ]]
+        if showContainerNameColumn then html = html .. "<th>Container Name</th>" end
+        if showContainerCapacityColumn then html = html .. "<th>Capacity</th>" end
+        html = html .. [[<th>Item Name</th>
+        			 <th>Amount</th>
                         <th>Percent Fill</th>
                     </tr>
                 </thead>
@@ -168,11 +181,16 @@ if #screens > 0 then
                     html = html .. [[
                         <tr>
                             <th>]] .. tier_k .. [[</th>
-                            <th>]] .. container.name .. [[</th>
-                            <th>]] .. format_number(container.volume) .. [[L</th>
-                            <th>]] .. container.ingredient.name .. [[</th>
+                        ]]
+                    if showContainerNameColumn then
+                        html = html .. "<th>" .. container.name .. "</th>"
+                    end
+                    if showContainerCapacityColumn then
+                        html = html .. "<th>" .. format_number(container.volume) .. "</th>"
+                    end
+                    html = html .. [[<th>]] .. container.ingredient.name .. [[</th>
                             <th>]] .. format_number(utils.round(container.quantity * 100) / 100) .. [[</th>
-                            <th style="position:relative;width: ]] .. tostring((gaugeWidth/1920)*100) .. [[vw;">
+                            <th style="position:relative;width: ]] .. tostring(gaugePercentWidth) .. widthUnit .. [[;">
                                 <div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;">&nbsp;</div>
                                 <div class="]] .. text_color_class .. [[" style="position:absolute;width:100%;top:50%;font-weight:bold;transform:translateY(-50%);">
                                     ]] .. format_number(utils.round(container.percent * 100) / 100) .. [[%
