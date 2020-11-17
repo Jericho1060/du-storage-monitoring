@@ -82,13 +82,13 @@ end
 local groupped = {}
 if groupByItemName then
     for _,v in pairs(storage_elements) do
-        local prefix = v.prefix
-        if groupped[prefix .. v.ingredient.name] then
-            groupped[prefix .. v.ingredient.name].quantity = groupped[prefix .. v.ingredient.name].quantity + v.quantity
-            groupped[prefix .. v.ingredient.name].volume = groupped[prefix .. v.ingredient.name].volume + v.volume
-            groupped[prefix .. v.ingredient.name].percent = (v.ingredient.volume * groupped[prefix .. v.ingredient.name].quantity) * 100 / groupped[prefix .. v.ingredient.name].volume
+        local prefix = v.prefix:lower()
+        if groupped[prefix .. cleanName(v.ingredient.name)] then
+            groupped[prefix .. cleanName(v.ingredient.name)].quantity = groupped[prefix .. cleanName(v.ingredient.name)].quantity + v.quantity
+            groupped[prefix .. cleanName(v.ingredient.name)].volume = groupped[prefix .. cleanName(v.ingredient.name)].volume + v.volume
+            groupped[prefix .. cleanName(v.ingredient.name)].percent = (v.ingredient.volume * groupped[prefix .. cleanName(v.ingredient.name)].quantity) * 100 / groupped[prefix .. cleanName(v.ingredient.name)].volume
         else
-            groupped[prefix .. v.ingredient.name] = v
+            groupped[prefix .. cleanName(v.ingredient.name)] = v
         end
     end
 else
