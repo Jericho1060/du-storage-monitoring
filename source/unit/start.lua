@@ -17,6 +17,10 @@ container_fill_red_level = 10 --export: The percent fill below gauge will be red
 container_fill_yellow_level = 50 --export: The percent fill below gauge will be yellow
 groupByItemName = true --export: if enabled, this will group all entries with the same item name
 
+gaugeWidth = 750 --export: the width of the gauge in pixel for a full hd screen (1920 * 1080)
+fontSize = 1.5 --export: the size of the text for all the screen
+borderColor = "orange" --export: thoe color of the table border
+
 --[[
 	INIT
 ]]

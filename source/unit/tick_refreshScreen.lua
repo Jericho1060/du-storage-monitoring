@@ -115,9 +115,7 @@ if #screens > 0 then
     local css = [[
         <style>
     	   * {
-    		  font-size: 1.5vw;
-    		  font-weight: bold;
-    		  color: white;
+    		  font-size: ]] .. tostring(fontSize) .. [[vw;
     	   }
             .screenContent {
                 position:absolute;
@@ -126,14 +124,11 @@ if #screens > 0 then
                 width: 100vw;
                 heigth:100vh;
             }
-    	   table {
-    		  width:100vw;
-    		  border:2px solid orange;
-    	   }
-    	   th, td {
-    		  border:2px solid orange;
-		  }
+    	   table { width:100vw; }
+    	   th, td { border:2px solid orange; }
             .text-orangered{color:orangered;}
+    	   .text-red{color:red;}
+    	   .text-orangered, text-red{font-weight:500 !important;}
             .bg-success{background-color: #28a745;}
             .bg-danger{background-color:#dc3545;}
             .bg-warning{background-color:#ffc107;}
@@ -165,6 +160,7 @@ if #screens > 0 then
                     local text_color_class = ""
                     if container.percent < container_fill_red_level then
                         gauge_color_class = "bg-danger"
+                        text_color_class = "text-red"
                     elseif  container.percent < container_fill_yellow_level then
                         gauge_color_class = "bg-warning"
                         text_color_class = "text-orangered"
@@ -176,7 +172,7 @@ if #screens > 0 then
                             <th>]] .. format_number(container.volume) .. [[L</th>
                             <th>]] .. container.ingredient.name .. [[</th>
                             <th>]] .. format_number(utils.round(container.quantity * 100) / 100) .. [[</th>
-                            <th style="position:relative;width: ]] .. tostring((750/1920)*100) .. [[vw;">
+                            <th style="position:relative;width: ]] .. tostring((gaugeWidth/1920)*100) .. [[vw;">
                                 <div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;">&nbsp;</div>
                                 <div class="]] .. text_color_class .. [[" style="position:absolute;width:100%;top:50%;font-weight:bold;transform:translateY(-50%);">
                                     ]] .. format_number(utils.round(container.percent * 100) / 100) .. [[%
