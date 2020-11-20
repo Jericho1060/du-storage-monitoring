@@ -135,7 +135,7 @@ if #screens > 0 then
         ]]
     end
     css = css .. [[}
-    	   th, td { border:2px solid orange; }
+    	   th, td { border:2px solid ]] .. borderColor .. [[; }
             .text-orange{color:orange;}
     	   .text-red{color:red;}
             .bg-success{background-color: #28a745;}
