@@ -23,6 +23,9 @@ gaugeWidth = 750 --export: the width of the gauge in pixel for a full hd screen 
 fontSize = 1.5 --export: the size of the text for all the screen
 borderColor = "orange" --export: the color of the table border
 verticalMode = false --export: enable to use on a vertical screen (not yet ready)
+showGreen = true --export: if not enable, line with green gauge will be hidden
+showYellow = true --export: if not enable, line with yellow gauge will be hidden
+showRed = true --export: if not enable, line with red gauge will be hidden
 showContainerNameColumn = false --export: show or not the column "Container Name"
 showContainerCapacityColumn = false --export: show or not the column "Container Total Capacity"
 

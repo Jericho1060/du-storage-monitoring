@@ -62,6 +62,9 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `fontSize`: the size of the text for all the screen
 - `borderColor`: the color of the table border
 - `verticalMode`: enable to use on a vertical screen (not yet ready)
+- `showGreen`: if not enable, line with green gauge will be hidden
+- `showYellow`: if not enable, line with yellow gauge will be hidden
+- `showRed`: if not enable, line with red gauge will be hidden
 - `showContainerNameColumn`: show or not the column "Container Name"
 - `showContainerCapacityColumn`: show or not the column "Container Total Capacity"
 
