@@ -123,87 +123,85 @@ if #screens > 0 then
     local css = [[
         <style>
     	   * {
-    		  font-size: ]] .. tostring(fontSize) .. [[vw;
     		  text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
     	   }
-    	   table { width:100]] .. widthUnit .. [[; ]]
+    ]]
     if verticalMode then
         css = css .. [[
-        	transform:rotate(-90deg);
-        	transform-origin:0% 0%;
-        	margin-top:100vh;
+            .container{
+                width:100]] .. widthUnit .. [[;
+                transform:rotate(-90deg);
+                transform-origin:0% 0%;
+                margin-top:100vh;
+            }
         ]]
     end
-    css = css .. [[}
-    	   th, td { border:2px solid ]] .. borderColor .. [[; }
-            .text-orange{color:orange;}
-    	   .text-red{color:red;}
-            .bg-success{background-color: #28a745;}
-            .bg-danger{background-color:#dc3545;}
-            .bg-warning{background-color:#ffc107;}
-            .bg-info{background-color:#17a2b8;}
-            .bg-primary{background-color:#007bff;}
+    css = css .. [[
+    	.row {
+    		border-bottom:2px solid ]] .. borderColor .. [[;
+    		font-size: ]] .. tostring(fontSize) .. [[vw;
+    		width:100]] .. widthUnit .. [[;
+		}
         </style>
     ]]
     for index, screen in pairs(screens) do
         local prefix = prefixes[index]
         local html = [[
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tier</th>
+            <div class="container">
+                <div class="row">
+                    <div class="col-1 text-center">Tier</div>
         ]]
-        if showContainerNameColumn then html = html .. "<th>Container Name</th>" end
-        if showContainerCapacityColumn then html = html .. "<th>Capacity</th>" end
-        html = html .. [[<th>Item Name</th>
-        			 <th>Amount</th>
-                        <th>Percent Fill</th>
-                    </tr>
-                </thead>
-                <tbody>
+        if showContainerNameColumn then
+            html = html .. [[<div class="col">Container Name</div>]]
+        end
+        if showContainerCapacityColumn then
+            html = html .. [[<div class="col">Capacity</div>]]
+        end
+        html = html .. [[
+                <div class="col">Item Name</div>
+                <div class="col">Amount</div>
+                <div class="col-2 text-center">Percent Fill</div>
+            </div>
         ]]
 
         for tier_k,tier in pairs(tiers) do
             for _,container in pairs(tier) do
                 if container.prefix:lower():find(prefix:lower()) then
                     local gauge_color_class = "bg-success"
-                    local text_color_class = ""
+                    local text_color_class = "text-success"
                     local show = showGreen
                     if container.percent < container_fill_red_level then
                         gauge_color_class = "bg-danger"
-                        text_color_class = "text-red"
+                        text_color_class = "text-danger"
                         show = showRed
                     elseif  container.percent < container_fill_yellow_level then
                         gauge_color_class = "bg-warning"
-                        text_color_class = "text-orange"
+                        text_color_class = "text-warning"
                         show = showYellow
                     end
                     if show == true then
                         html = html .. [[
-                            <tr>
-                                <th>]] .. tier_k .. [[</th>
-                            ]]
+                        	<div class="row ]] .. text_color_class ..[[">
+                        		<div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;position:absolute;height:100%;">&nbsp;</div>
+                        		<div class="col-1 text-center">]] .. tier_k .. [[</div>
+                        ]]
                         if showContainerNameColumn then
-                            html = html .. "<th>" .. container.realName .. "</th>"
+                            html = html .. [[<div class="col">]] .. container.realName .. "</div>"
                         end
                         if showContainerCapacityColumn then
-                            html = html .. "<th>" .. format_number(utils.round(container.volume)) .. "</th>"
+                            html = html .. [[<div class="col">]] .. format_number(utils.round(container.volume)) .. "</div>"
                         end
-                        html = html .. [[<th>]] .. container.ingredient.name .. [[</th>
-                                <th>]] .. format_number(utils.round(container.quantity * (10 ^ QuantityRoundedDecimals)) / (10 ^ QuantityRoundedDecimals)) .. [[</th>
-                                <th style="position:relative;width: ]] .. tostring(gaugePercentWidth) .. widthUnit .. [[;">
-                                    <div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;">&nbsp;</div>
-                                    <div class="]] .. text_color_class .. [[" style="position:absolute;width:100%;top:50%;font-weight:bold;transform:translateY(-50%);">
-                                        ]] .. format_number(utils.round(container.percent * (10 ^ PercentRoundedDecimals)) / (10 ^ PercentRoundedDecimals)) .. [[%
-                                    </div>
-                                </th>
-                            </tr>
+                        html = html .. [[
+                        		<div class="col">]] .. container.ingredient.name .. [[</div>
+                        		<div class="col">]] .. format_number(utils.round(container.quantity * (10 ^ QuantityRoundedDecimals)) / (10 ^ QuantityRoundedDecimals)) .. [[</div>
+                        		<div class="col-2 text-center">]] .. format_number(utils.round(container.percent * (10 ^ PercentRoundedDecimals)) / (10 ^ PercentRoundedDecimals)) .. [[%</div>
+                        	</div>
                         ]]
                     end
                 end
             end
         end
-        html = html .. [[</tbody></table>]]
-        screen.setHTML(css .. html)
+        html = html .. [[</div>]]
+        screen.setHTML(css .. bootstrap_css .. html)
     end
 end
