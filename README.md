@@ -3,9 +3,9 @@ a simple storage monitoring for Dual Universe
 
 ![Img001](https://github.com/Jericho1060/du-storage-monitoring/blob/main/du-storage-monitoring.png?raw=true)
 
-# Discord Server
+# Guilded Server (better than Discord)
 
-You can join me on Discord for help or suggestions or requests by folowing that link : https://discord.jericho1060.com
+You can join me on Guilded for help or suggestions or requests by following that link : https://www.guilded.gg/i/0k8OBQX2
 
 #Description
 It's displaying on a screen the quantity and the percent fill of containers or hub.
