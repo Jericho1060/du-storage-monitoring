@@ -1,6 +1,7 @@
 --[[
 	LUA PARAMETERS
 ]]
+useDatabankValues = true --export: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
 
 containerMonitoringPrefix_screen1 = "MONIT_" --export: the prefix used to enable container monitoring and display on the 1st screen
 containerMonitoringPrefix_screen2 = "s2_" --export: the prefix used to enable container monitoring and display on the 2nd screen
@@ -31,6 +32,31 @@ showContainerCapacityColumn = false --export: show or not the column "Container 
 --[[
 	INIT
 ]]
+options = {}
+options.containerMonitoringPrefix_screen1 = containerMonitoringPrefix_screen1
+options.containerMonitoringPrefix_screen2 = containerMonitoringPrefix_screen2
+options.containerMonitoringPrefix_screen3 = containerMonitoringPrefix_screen3
+options.containerMonitoringPrefix_screen4 = containerMonitoringPrefix_screen4
+options.containerMonitoringPrefix_screen5 = containerMonitoringPrefix_screen5
+options.containerMonitoringPrefix_screen6 = containerMonitoringPrefix_screen6
+options.containerMonitoringPrefix_screen7 = containerMonitoringPrefix_screen7
+options.containerMonitoringPrefix_screen8 = containerMonitoringPrefix_screen8
+options.containerMonitoringPrefix_screen9 = containerMonitoringPrefix_screen9
+options.container_proficiency_lvl = container_proficiency_lvl
+options.container_fill_red_level = container_fill_red_level
+options.container_fill_yellow_level = container_fill_yellow_level
+options.groupByItemName = groupByItemName
+options.QuantityRoundedDecimals = QuantityRoundedDecimals
+options.PercentRoundedDecimals = PercentRoundedDecimals
+options.fontSize = fontSize
+options.borderColor = borderColor
+options.verticalMode = verticalMode
+options.showGreen = showGreen
+options.showYellow = showYellow
+options.showRed = showRed
+options.showContainerNameColumn = showContainerNameColumn
+options.showContainerCapacityColumn = showContainerCapacityColumn
+
 core = nil
 databank = nil
 screens = {}
@@ -70,17 +96,23 @@ if databank == nil then
     system.printWarning("No Databank Detected")
 else
     system.printSuccess("Databank Connected")
+    if (databank.hasKey("options")) and (useDatabankValues == true) then
+        options = json.decode(databank.getStringValue("options"))
+        system.printSuccess("Options Loaded From Databank")
+    else
+        system.printWarning("Options Loaded From LUA Parameters")
+    end
 end
 prefixes = {
-    containerMonitoringPrefix_screen1,
-    containerMonitoringPrefix_screen2,
-    containerMonitoringPrefix_screen3,
-    containerMonitoringPrefix_screen4,
-    containerMonitoringPrefix_screen5,
-    containerMonitoringPrefix_screen6,
-    containerMonitoringPrefix_screen7,
-    containerMonitoringPrefix_screen8,
-    containerMonitoringPrefix_screen9
+    options.containerMonitoringPrefix_screen1,
+    options.containerMonitoringPrefix_screen2,
+    options.containerMonitoringPrefix_screen3,
+    options.containerMonitoringPrefix_screen4,
+    options.containerMonitoringPrefix_screen5,
+    options.containerMonitoringPrefix_screen6,
+    options.containerMonitoringPrefix_screen7,
+    options.containerMonitoringPrefix_screen8,
+    options.containerMonitoringPrefix_screen9
 }
 elementsIdList = {}
 if core ~= nil then

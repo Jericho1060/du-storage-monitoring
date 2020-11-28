@@ -30,10 +30,12 @@ By default, the list is sorted by item tier and then by name
  
  - screen : 1 (up to 9)
  - programming bard : 1
+ - databank : 1 (optional)
  
 ### links
 
-The programming board must be linked to the core and to the screen
+The programming board must be linked to the core and to the screens.
+If linked to a databank, the parameters will be saved for easier update.
 
 ### installing the script
 
@@ -43,6 +45,7 @@ Copy the content of the file config.json then right clik on the board, chose adv
 
 By rightclicking on the board, advanced, edit lua parameters, you can customize these options:
 
+- `useDatabankValues`: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
 - `containerMonitoringPrefix_screen1`: the prefix value to add to each containers that should be monitored and display on the 1st screen. Default to `MONIT_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen2`: the prefix value to add to each containers that should be monitored and display on the 2nd screen. Default to `s2_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen3`: the prefix value to add to each containers that should be monitored and display on the 3rd screen. Default to `s3_`, you must keep the `_` in that option
@@ -58,7 +61,6 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `groupByItemName`: if enabled, this will group all entries with the same item name (enabled by default)
 - `QuantityRoundedDecimals`: maximum of decimals displayed for the quantity value
 - `PercentRoundedDecimals`: maximum of decimals displayed for the percent fill value
-- `gaugeWidth`: the width of the gauge in pixel for a full hd screen (1920 * 1080)
 - `fontSize`: the size of the text for all the screen
 - `borderColor`: the color of the table border
 - `verticalMode`: enable to use on a vertical screen (not yet ready)
