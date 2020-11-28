@@ -5,7 +5,7 @@ a simple storage monitoring for Dual Universe
 
 # Guilded Server (better than Discord)
 
-You can join me on Guilded for help or suggestions or requests by following that link : https://www.guilded.gg/i/0k8OBQX2
+You can join me on Guilded for help or suggestions or requests by following that link : https://guilded.jericho1060.com
 
 #Description
 It's displaying on a screen the quantity and the percent fill of containers or hub.
