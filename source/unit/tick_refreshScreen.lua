@@ -112,7 +112,6 @@ for k,v in pairs(tiers) do
 end
 
 if #screens > 0 then
-    local gaugePercentWidth = (gaugeWidth/1920)*100
     local widthUnit = "vw"
     local heightUnit = "vh"
     if verticalMode then
