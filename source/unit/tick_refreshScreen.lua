@@ -115,7 +115,6 @@ if #screens > 0 then
     local widthUnit = "vw"
     local heightUnit = "vh"
     if verticalMode then
-        gaugePercentWidth = ((gaugeWidth*1080/1920)/1080)*100
         widthUnit = "vh"
         heightUnit = "vw"
     end

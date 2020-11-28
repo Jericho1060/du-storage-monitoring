@@ -31,18 +31,8 @@ showContainerCapacityColumn = false --export: show or not the column "Container 
 --[[
 	INIT
 ]]
-prefixes = {
-    containerMonitoringPrefix_screen1,
-    containerMonitoringPrefix_screen2,
-    containerMonitoringPrefix_screen3,
-    containerMonitoringPrefix_screen4,
-    containerMonitoringPrefix_screen5,
-    containerMonitoringPrefix_screen6,
-    containerMonitoringPrefix_screen7,
-    containerMonitoringPrefix_screen8,
-    containerMonitoringPrefix_screen9
-}
 core = nil
+databank = nil
 screens = {}
 for slot_name, slot in pairs(unit) do
     if
@@ -56,6 +46,9 @@ for slot_name, slot in pairs(unit) do
         if slot.getElementClass():lower() == 'screenunit' then
             slot.slotname = slot_name
             table.insert(screens,slot)
+        end
+        if slot.getElementClass():lower() == 'databankunit' then
+            databank = slot
         end
     end
 end
@@ -73,6 +66,22 @@ if core == nil then
 else
     system.printSuccess("Core Connected")
 end
+if databank == nil then
+    system.printWarning("No Databank Detected")
+else
+    system.printSuccess("Databank Connected")
+end
+prefixes = {
+    containerMonitoringPrefix_screen1,
+    containerMonitoringPrefix_screen2,
+    containerMonitoringPrefix_screen3,
+    containerMonitoringPrefix_screen4,
+    containerMonitoringPrefix_screen5,
+    containerMonitoringPrefix_screen6,
+    containerMonitoringPrefix_screen7,
+    containerMonitoringPrefix_screen8,
+    containerMonitoringPrefix_screen9
+}
 elementsIdList = {}
 if core ~= nil then
     elementsIdList = core.getElementIdList()
