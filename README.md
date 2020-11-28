@@ -3,9 +3,9 @@ a simple storage monitoring for Dual Universe
 
 ![Img001](https://github.com/Jericho1060/du-storage-monitoring/blob/main/du-storage-monitoring.png?raw=true)
 
-# Discord Server
+# Guilded Server (better than Discord)
 
-You can join me on Discord for help or suggestions or requests by folowing that link : https://discord.jericho1060.com
+You can join me on Guilded for help or suggestions or requests by following that link : https://guilded.jericho1060.com
 
 #Description
 It's displaying on a screen the quantity and the percent fill of containers or hub.
@@ -30,10 +30,12 @@ By default, the list is sorted by item tier and then by name
  
  - screen : 1 (up to 9)
  - programming bard : 1
+ - databank : 1 (optional)
  
 ### links
 
-The programming board must be linked to the core and to the screen
+The programming board must be linked to the core and to the screens.
+If linked to a databank, the parameters will be saved for easier update.
 
 ### installing the script
 
@@ -43,6 +45,7 @@ Copy the content of the file config.json then right clik on the board, chose adv
 
 By rightclicking on the board, advanced, edit lua parameters, you can customize these options:
 
+- `useDatabankValues`: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
 - `containerMonitoringPrefix_screen1`: the prefix value to add to each containers that should be monitored and display on the 1st screen. Default to `MONIT_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen2`: the prefix value to add to each containers that should be monitored and display on the 2nd screen. Default to `s2_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen3`: the prefix value to add to each containers that should be monitored and display on the 3rd screen. Default to `s3_`, you must keep the `_` in that option
@@ -56,7 +59,16 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `container_fill_red_level`: The percent fill below gauge will be red
 - `container_fill_yellow_level`: The percent fill below gauge will be yellow
 - `groupByItemName`: if enabled, this will group all entries with the same item name (enabled by default)
-
+- `QuantityRoundedDecimals`: maximum of decimals displayed for the quantity value
+- `PercentRoundedDecimals`: maximum of decimals displayed for the percent fill value
+- `fontSize`: the size of the text for all the screen
+- `borderColor`: the color of the table border
+- `verticalMode`: enable to use on a vertical screen (not yet ready)
+- `showGreen`: if not enable, line with green gauge will be hidden
+- `showYellow`: if not enable, line with yellow gauge will be hidden
+- `showRed`: if not enable, line with red gauge will be hidden
+- `showContainerNameColumn`: show or not the column "Container Name"
+- `showContainerCapacityColumn`: show or not the column "Container Total Capacity"
 
 # Support or donation
 

@@ -4,15 +4,15 @@ for _,id in pairs(elementsIdList) do
     if elementType:lower():find("container") then
         local elementName = core.getElementNameById(id)
         if
-        elementName:lower():find(containerMonitoringPrefix_screen1:lower())
-                or elementName:lower():find(containerMonitoringPrefix_screen2:lower())
-                or elementName:lower():find(containerMonitoringPrefix_screen3:lower())
-                or elementName:lower():find(containerMonitoringPrefix_screen4:lower())
-                or elementName:lower():find(containerMonitoringPrefix_screen5:lower())
-                or elementName:lower():find(containerMonitoringPrefix_screen6:lower())
-                or elementName:lower():find(containerMonitoringPrefix_screen7:lower())
-                or elementName:lower():find(containerMonitoringPrefix_screen8:lower())
-                or elementName:lower():find(containerMonitoringPrefix_screen9:lower())
+        elementName:lower():find(prefixes[1]:lower())
+                or elementName:lower():find(prefixes[2]:lower())
+                or elementName:lower():find(prefixes[3]:lower())
+                or elementName:lower():find(prefixes[4]:lower())
+                or elementName:lower():find(prefixes[5]:lower())
+                or elementName:lower():find(prefixes[6]:lower())
+                or elementName:lower():find(prefixes[7]:lower())
+                or elementName:lower():find(prefixes[8]:lower())
+                or elementName:lower():find(prefixes[9]:lower())
         then
             local container = {}
             local splitted = strSplit(elementName, '_')
@@ -29,19 +29,19 @@ for _,id in pairs(elementsIdList) do
                 if containerMaxHP > 17000 then
                     container_size = "L"
                     container_empty_mass = getIngredient("Container L").mass
-                    container_volume = 128000 * (container_proficiency_lvl * 0.1) + 128000
+                    container_volume = 128000 * (options.container_proficiency_lvl * 0.1) + 128000
                 elseif containerMaxHP > 7900 then
                     container_size = "M"
                     container_empty_mass = getIngredient("Container M").mass
-                    container_volume = 64000 * (container_proficiency_lvl * 0.1) + 64000
+                    container_volume = 64000 * (options.container_proficiency_lvl * 0.1) + 64000
                 elseif containerMaxHP > 900 then
                     container_size = "S"
                     container_empty_mass = getIngredient("Container S").mass
-                    container_volume = 8000 * (container_proficiency_lvl * 0.1) + 8000
+                    container_volume = 8000 * (options.container_proficiency_lvl * 0.1) + 8000
                 else
                     container_size = "XS"
                     container_empty_mass = getIngredient("Container XS").mass
-                    container_volume = 1000 * (container_proficiency_lvl * 0.1) + 1000
+                    container_volume = 1000 * (options.container_proficiency_lvl * 0.1) + 1000
                 end
             else
                 if splitted[3] then
@@ -56,7 +56,7 @@ for _,id in pairs(elementsIdList) do
                 elseif container_size:lower() == "s" then volume = 8000
                 elseif container_size:lower() == "xs" then volume = 1000
                 end
-                container_volume = volume * (container_proficiency_lvl * 0.1) + volume
+                container_volume = volume * (options.container_proficiency_lvl * 0.1) + volume
                 container_volume = container_volume * container_amount
                 container_empty_mass = getIngredient("Container Hub").mass
             end
@@ -82,13 +82,13 @@ end
 local groupped = {}
 if groupByItemName then
     for _,v in pairs(storage_elements) do
-        local prefix = v.prefix
-        if groupped[prefix .. v.ingredient.name] then
-            groupped[prefix .. v.ingredient.name].quantity = groupped[prefix .. v.ingredient.name].quantity + v.quantity
-            groupped[prefix .. v.ingredient.name].volume = groupped[prefix .. v.ingredient.name].volume + v.volume
-            groupped[prefix .. v.ingredient.name].percent = (v.ingredient.volume * groupped[prefix .. v.ingredient.name].quantity) * 100 / groupped[prefix .. v.ingredient.name].volume
+        local prefix = v.prefix:lower()
+        if groupped[prefix .. cleanName(v.ingredient.name)] then
+            groupped[prefix .. cleanName(v.ingredient.name)].quantity = groupped[prefix .. cleanName(v.ingredient.name)].quantity + v.quantity
+            groupped[prefix .. cleanName(v.ingredient.name)].volume = groupped[prefix .. cleanName(v.ingredient.name)].volume + v.volume
+            groupped[prefix .. cleanName(v.ingredient.name)].percent = (v.ingredient.volume * groupped[prefix .. cleanName(v.ingredient.name)].quantity) * 100 / groupped[prefix .. cleanName(v.ingredient.name)].volume
         else
-            groupped[prefix .. v.ingredient.name] = v
+            groupped[prefix .. cleanName(v.ingredient.name)] = v
         end
     end
 else
@@ -112,82 +112,94 @@ for k,v in pairs(tiers) do
 end
 
 if #screens > 0 then
+    local widthUnit = "vw"
+    local heightUnit = "vh"
+    if options.verticalMode then
+        widthUnit = "vh"
+        heightUnit = "vw"
+    end
     local css = [[
         <style>
     	   * {
-    		  font-size: 1.5vw;
-    		  font-weight: bold;
-    		  color: white;
+    		  text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
     	   }
-            .screenContent {
-                position:absolute;
-                top:0;
-                left:0;
-                width: 100vw;
-                heigth:100vh;
+    ]]
+    if options.verticalMode then
+        css = css .. [[
+            .container{
+                width:100]] .. widthUnit .. [[;
+                transform:rotate(-90deg);
+                transform-origin:0% 0%;
+                margin-top:100vh;
             }
-    	   table {
-    		  width:100vw;
-    		  border:2px solid orange;
-    	   }
-    	   th, td {
-    		  border:2px solid orange;
-		  }
-            .text-orangered{color:orangered;}
-            .bg-success{background-color: #28a745;}
-            .bg-danger{background-color:#dc3545;}
-            .bg-warning{background-color:#ffc107;}
-            .bg-info{background-color:#17a2b8;}
-            .bg-primary{background-color:#007bff;}
+        ]]
+    end
+    css = css .. [[
+    	.row {
+    		border-bottom:2px solid ]] .. options.borderColor .. [[;
+    		font-size: ]] .. tostring(options.fontSize) .. [[vw;
+    		width:100]] .. widthUnit .. [[;
+		}
         </style>
     ]]
     for index, screen in pairs(screens) do
         local prefix = prefixes[index]
         local html = [[
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tier</th>
-                        <th>Container Name</th>
-                        <th>Capacity</th>
-                        <th>Item Name</th>
-                        <th>Amount</th>
-                        <th>Percent Fill</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="container">
+                <div class="row">
+                    <div class="col-1 text-center">Tier</div>
+        ]]
+        if options.showContainerNameColumn then
+            html = html .. [[<div class="col">Container Name</div>]]
+        end
+        if options.showContainerCapacityColumn then
+            html = html .. [[<div class="col">Capacity</div>]]
+        end
+        html = html .. [[
+                <div class="col">Item Name</div>
+                <div class="col">Amount</div>
+                <div class="col-2 text-center">Percent Fill</div>
+            </div>
         ]]
 
         for tier_k,tier in pairs(tiers) do
             for _,container in pairs(tier) do
                 if container.prefix:lower():find(prefix:lower()) then
                     local gauge_color_class = "bg-success"
-                    local text_color_class = ""
-                    if container.percent < container_fill_red_level then
+                    local text_color_class = "text-success"
+                    local show = showGreen
+                    if container.percent < options.container_fill_red_level then
                         gauge_color_class = "bg-danger"
-                    elseif  container.percent < container_fill_yellow_level then
+                        text_color_class = "text-danger"
+                        show = showRed
+                    elseif  container.percent < options.container_fill_yellow_level then
                         gauge_color_class = "bg-warning"
-                        text_color_class = "text-orangered"
+                        text_color_class = "text-warning"
+                        show = showYellow
                     end
-                    html = html .. [[
-                        <tr>
-                            <th>]] .. tier_k .. [[</th>
-                            <th>]] .. container.name .. [[</th>
-                            <th>]] .. format_number(container.volume) .. [[L</th>
-                            <th>]] .. container.ingredient.name .. [[</th>
-                            <th>]] .. format_number(utils.round(container.quantity * 100) / 100) .. [[</th>
-                            <th style="position:relative;width: ]] .. tostring((750/1920)*100) .. [[vw;">
-                                <div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;">&nbsp;</div>
-                                <div class="]] .. text_color_class .. [[" style="position:absolute;width:100%;top:50%;font-weight:bold;transform:translateY(-50%);">
-                                    ]] .. format_number(utils.round(container.percent * 100) / 100) .. [[%
-                                </div>
-                            </th>
-                        </tr>
-                    ]]
+                    if show == true then
+                        html = html .. [[
+                        	<div class="row ]] .. text_color_class ..[[">
+                        		<div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;position:absolute;height:100%;">&nbsp;</div>
+                        		<div class="col-1 text-center">]] .. tier_k .. [[</div>
+                        ]]
+                        if options.showContainerNameColumn then
+                            html = html .. [[<div class="col">]] .. container.realName .. "</div>"
+                        end
+                        if options.showContainerCapacityColumn then
+                            html = html .. [[<div class="col">]] .. format_number(utils.round(container.volume)) .. "</div>"
+                        end
+                        html = html .. [[
+                        		<div class="col">]] .. container.ingredient.name .. [[</div>
+                        		<div class="col">]] .. format_number(utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals)) .. [[</div>
+                        		<div class="col-2 text-center">]] .. format_number(utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals)) .. [[%</div>
+                        	</div>
+                        ]]
+                    end
                 end
             end
         end
-        html = html .. [[</tbody></table>]]
-        screen.setHTML(css .. html)
+        html = html .. [[</div>]]
+        screen.setHTML(css .. bootstrap_css .. html)
     end
 end
