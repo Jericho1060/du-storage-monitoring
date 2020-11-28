@@ -57,7 +57,7 @@ for _,id in pairs(elementsIdList) do
                 elseif container_size:lower() == "xs" then volume = 1000
                 end
                 container_volume = volume * (options.container_proficiency_lvl * 0.1) + volume
-                container_volume = container_volume * container_amount
+                container_volume = container_volume * tonumber(container_amount)
                 container_empty_mass = getIngredient("Container Hub").mass
             end
             local totalMass = core.getElementMassById(id)
@@ -97,13 +97,14 @@ end
 
 -- sorting by tier
 local tiers = {}
-tiers[1] = {}
-tiers[2] = {}
-tiers[3] = {}
-tiers[4] = {}
-tiers[5] = {}
+tiers[1] = {} --tier 0 (thx to Belorion#3127 for pointing Oxygen and Hydrogen are Tier 0 and not 1)
+tiers[2] = {} --tier 1
+tiers[3] = {} --tier 2
+tiers[4] = {} --tier 3
+tiers[5] = {} --tier 4
+tiers[6] = {} --tier 5
 for _,v in pairs(groupped) do
-    table.insert(tiers[v.ingredient.tier],v)
+    table.insert(tiers[v.ingredient.tier+1],v)
 end
 
 -- sorting by name
@@ -181,7 +182,7 @@ if #screens > 0 then
                         html = html .. [[
                         	<div class="row ]] .. text_color_class ..[[">
                         		<div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;position:absolute;height:100%;">&nbsp;</div>
-                        		<div class="col-1 text-center">]] .. tier_k .. [[</div>
+                        		<div class="col-1 text-center">]] .. tier_k-1 .. [[</div>
                         ]]
                         if options.showContainerNameColumn then
                             html = html .. [[<div class="col">]] .. container.realName .. "</div>"
