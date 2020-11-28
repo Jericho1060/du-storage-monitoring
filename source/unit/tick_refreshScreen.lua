@@ -97,6 +97,7 @@ end
 
 -- sorting by tier
 local tiers = {}
+tiers[0] = {}
 tiers[1] = {}
 tiers[2] = {}
 tiers[3] = {}
