@@ -14,6 +14,7 @@ containerMonitoringPrefix_screen8 = "s8_" --export: the prefix used to enable co
 containerMonitoringPrefix_screen9 = "s9_" --export: the prefix used to enable container monitoring and display on the 9th screen
 
 container_proficiency_lvl = 3 --export: Talent level for Container Proficiency
+container_optimization_lvl = 0 --export: Talent level for Container Optimization
 container_fill_red_level = 10 --export: The percent fill below gauge will be red
 container_fill_yellow_level = 50 --export: The percent fill below gauge will be yellow
 groupByItemName = true --export: if enabled, this will group all entries with the same item name
@@ -43,6 +44,7 @@ options.containerMonitoringPrefix_screen7 = containerMonitoringPrefix_screen7
 options.containerMonitoringPrefix_screen8 = containerMonitoringPrefix_screen8
 options.containerMonitoringPrefix_screen9 = containerMonitoringPrefix_screen9
 options.container_proficiency_lvl = container_proficiency_lvl
+options.container_optimization_lvl = container_optimization_lvl
 options.container_fill_red_level = container_fill_red_level
 options.container_fill_yellow_level = container_fill_yellow_level
 options.groupByItemName = groupByItemName
@@ -97,7 +99,10 @@ if databank == nil then
 else
     system.printSuccess("Databank Connected")
     if (databank.hasKey("options")) and (useDatabankValues == true) then
-        options = json.decode(databank.getStringValue("options"))
+        local db_options = json.decode(databank.getStringValue("options"))
+        for key, value in pairs(options) do
+            if db_options[key] then options[key] = db_options[key] end
+        end
         system.printSuccess("Options Loaded From Databank")
     else
         system.printWarning("Options Loaded From LUA Parameters")

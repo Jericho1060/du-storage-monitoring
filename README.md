@@ -56,6 +56,7 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `containerMonitoringPrefix_screen8`: the prefix value to add to each containers that should be monitored and display on the 8th screen. Default to `s8_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen9`: the prefix value to add to each containers that should be monitored and display on the 9th screen. Default to `s9_`, you must keep the `_` in that option
 - `container_proficiency_lvl`: Talent level for Container Proficiency
+- `container_optimization_lvl`: Talent level for Container Optimization
 - `container_fill_red_level`: The percent fill below gauge will be red
 - `container_fill_yellow_level`: The percent fill below gauge will be yellow
 - `groupByItemName`: if enabled, this will group all entries with the same item name (enabled by default)

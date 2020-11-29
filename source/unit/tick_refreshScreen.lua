@@ -67,7 +67,7 @@ for _,id in pairs(elementsIdList) do
             container.prefix = splitted[1] .. "_"
             container.name = name
             container.ingredient = ingredient
-            container.quantity = contentMassKg / ingredient.mass
+            container.quantity = contentMassKg / (ingredient.mass - (ingredient.mass * (options.container_optimization_lvl * 0.05)))
             container.volume = container_volume
             container.percent = utils.round((ingredient.volume * container.quantity) * 100 / container_volume)
             if ingredient.name == "unknown" then
