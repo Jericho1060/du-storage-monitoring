@@ -54,7 +54,16 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `containerMonitoringPrefix_screen6`: the prefix value to add to each containers that should be monitored and display on the 6th screen. Default to `s6_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen7`: the prefix value to add to each containers that should be monitored and display on the 7th screen. Default to `s7_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen8`: the prefix value to add to each containers that should be monitored and display on the 8th screen. Default to `s8_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen9`: the prefix value to add to each containers that should be monitored and display on the 9th screen. Default to `s9_`, you must keep the `_` in that option
+- `containerMonitoringPrefix_screen9`: the prefix value to add to each containers that should be monitored and display on the 9th screen. Default to `s9_`, you must keep the `_` in that option 
+- `screenTitle1`: the title display on the 1st screen, not displayed if empty or equal to "-"
+- `screenTitle2`: the title display on the 2nd screen, not displayed if empty or equal to "-"
+- `screenTitle3`: the title display on the 3rd screen, not displayed if empty or equal to "-"
+- `screenTitle4`: the title display on the 4th screen, not displayed if empty or equal to "-"
+- `screenTitle5`: the title display on the 5th screen, not displayed if empty or equal to "-"
+- `screenTitle6`: the title display on the 6th screen, not displayed if empty or equal to "-"
+- `screenTitle7`: the title display on the 7th screen, not displayed if empty or equal to "-"
+- `screenTitle8`: the title display on the 8th screen, not displayed if empty or equal to "-"
+- `screenTitle9`: the title display on the 9th screen, not displayed if empty or equal to "-"
 - `container_proficiency_lvl`: Talent level for Container Proficiency
 - `container_optimization_lvl`: Talent level for Container Optimization
 - `container_fill_red_level`: The percent fill below gauge will be red

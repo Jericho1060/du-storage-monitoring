@@ -145,8 +145,18 @@ if #screens > 0 then
     ]]
     for index, screen in pairs(screens) do
         local prefix = prefixes[index]
-        local html = [[
-            <div class="container">
+        local title = titles[index]
+        local html = [[<div class="container">]]
+        if (title:len() > 0) and (title ~= "-") then
+            html = html .. [[
+            	<div class="row">
+            		<div class="col text-center" style="font-size:5vw;">
+            			]] .. title .. [[
+            		</div>
+            	</div>
+            ]]
+        end
+        html = html .. [[
                 <div class="row">
                     <div class="col-1 text-center">Tier</div>
         ]]

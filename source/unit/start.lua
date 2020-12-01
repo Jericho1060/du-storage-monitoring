@@ -13,6 +13,16 @@ containerMonitoringPrefix_screen7 = "s7_" --export: the prefix used to enable co
 containerMonitoringPrefix_screen8 = "s8_" --export: the prefix used to enable container monitoring and display on the 8th screen
 containerMonitoringPrefix_screen9 = "s9_" --export: the prefix used to enable container monitoring and display on the 9th screen
 
+screenTitle1 = "title screen 1" --export: the title display on the 1st screen, not displayed if empty or equal to "-"
+screenTitle2 = "title screen 2" --export: the title display on the 2nd screen, not displayed if empty or equal to "-"
+screenTitle3 = "title screen 3" --export: the title display on the 3rd screen, not displayed if empty or equal to "-"
+screenTitle4 = "title screen 4" --export: the title display on the 4th screen, not displayed if empty or equal to "-"
+screenTitle5 = "title screen 5" --export: the title display on the 5th screen, not displayed if empty or equal to "-"
+screenTitle6 = "title screen 6" --export: the title display on the 6th screen, not displayed if empty or equal to "-"
+screenTitle7 = "title screen 7" --export: the title display on the 7th screen, not displayed if empty or equal to "-"
+screenTitle8 = "title screen 8" --export: the title display on the 8th screen, not displayed if empty or equal to "-"
+screenTitle9 = "title screen 9" --export: the title display on the 9th screen, not displayed if empty or equal to "-"
+
 container_proficiency_lvl = 3 --export: Talent level for Container Proficiency
 container_optimization_lvl = 0 --export: Talent level for Container Optimization
 container_fill_red_level = 10 --export: The percent fill below gauge will be red
@@ -43,6 +53,15 @@ options.containerMonitoringPrefix_screen6 = containerMonitoringPrefix_screen6
 options.containerMonitoringPrefix_screen7 = containerMonitoringPrefix_screen7
 options.containerMonitoringPrefix_screen8 = containerMonitoringPrefix_screen8
 options.containerMonitoringPrefix_screen9 = containerMonitoringPrefix_screen9
+options.screenTitle1 = screenTitle1
+options.screenTitle2 = screenTitle2
+options.screenTitle3 = screenTitle3
+options.screenTitle4 = screenTitle4
+options.screenTitle5 = screenTitle5
+options.screenTitle6 = screenTitle6
+options.screenTitle7 = screenTitle7
+options.screenTitle8 = screenTitle8
+options.screenTitle9 = screenTitle9
 options.container_proficiency_lvl = container_proficiency_lvl
 options.container_optimization_lvl = container_optimization_lvl
 options.container_fill_red_level = container_fill_red_level
@@ -118,6 +137,17 @@ prefixes = {
     options.containerMonitoringPrefix_screen7,
     options.containerMonitoringPrefix_screen8,
     options.containerMonitoringPrefix_screen9
+}
+titles = {
+    options.screenTitle1,
+    options.screenTitle2,
+    options.screenTitle3,
+    options.screenTitle4,
+    options.screenTitle5,
+    options.screenTitle6,
+    options.screenTitle7,
+    options.screenTitle8,
+    options.screenTitle9
 }
 elementsIdList = {}
 if core ~= nil then
