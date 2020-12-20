@@ -26,7 +26,15 @@ for _,id in pairs(elementsIdList) do
             local percent_fill = 0
             if not elementType:lower():find("hub") then
                 local containerMaxHP = core.getElementMaxHitPointsById(id)
-                if containerMaxHP > 17000 then
+                if containerMaxHP > 68000 then
+                    container_size = "XXL"
+                    container_empty_mass = getIngredient("Expanded Container XL").mass
+                    container_volume = 512000 * (options.container_proficiency_lvl * 0.1) + 512000
+                elseif containerMaxHP > 33000 then
+                    container_size = "XL"
+                    container_empty_mass = getIngredient("Container XL").mass
+                    container_volume = 256000 * (options.container_proficiency_lvl * 0.1) + 256000
+                elseif containerMaxHP > 17000 then
                     container_size = "L"
                     container_empty_mass = getIngredient("Container L").mass
                     container_volume = 128000 * (options.container_proficiency_lvl * 0.1) + 128000

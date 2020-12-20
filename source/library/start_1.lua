@@ -378,6 +378,8 @@ Ingredients = {
     ['containers'] = {['name'] = 'Container S', ['tier'] = 1, ['type'] = 'Container', ['mass'] = 1281.31, ['volume'] = 342},
     ['containerm'] = {['name'] = 'Container M', ['tier'] = 1, ['type'] = 'Container', ['mass'] = 7421.35, ['volume'] = 1873},
     ['containerl'] = {['name'] = 'Container L', ['tier'] = 1, ['type'] = 'Container', ['mass'] = 14842.7, ['volume'] = 3746},
+    ['containerxl'] = {['name'] = 'Container XL', ['tier'] = 1, ['type'] = 'Container', ['mass'] = 44210, ['volume'] = 10500},
+    ['expandedcontainerxl'] = {['name'] = 'Expanded Container XL', ['tier'] = 1, ['type'] = 'Container', ['mass'] = 88410, ['volume'] = 21000},
     ['dispenser'] = {['name'] = 'Dispenser', ['tier'] = 1, ['type'] = 'Container', ['mass'] = 2060, ['volume'] = 479.2},
     ['atmosphericfueltankxs'] = {['name'] = 'Atmospheric Fuel-Tank XS', ['tier'] = 1, ['type'] = 'Container', ['mass'] = 35.03, ['volume'] = 17.8},
     ['atmosphericfueltanks'] = {['name'] = 'Atmospheric Fuel-Tank S', ['tier'] = 1, ['type'] = 'Container', ['mass'] = 182.67, ['volume'] = 92.6},
