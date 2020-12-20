@@ -59,7 +59,9 @@ for _,id in pairs(elementsIdList) do
                     container_amount = splitted[4]
                 end
                 local volume = 0
-                if container_size:lower() == "l" then volume = 128000
+                if container_size:lower() == "xxl" then volume = 512000
+                elseif container_size:lower() == "xl" then volume = 256000
+                elseif container_size:lower() == "l" then volume = 128000
                 elseif container_size:lower() == "m" then volume = 64000
                 elseif container_size:lower() == "s" then volume = 8000
                 elseif container_size:lower() == "xs" then volume = 1000
