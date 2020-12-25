@@ -41,8 +41,8 @@ end
 
 Ingredients = {
     ['unknown'] = {['name'] = 'unknown', ['tier'] = 1, ['type'] = 'error', ['mass'] = 1, ['volume'] = 1},
-    ['bauxite'] = {['name'] = 'Bauxite', ['tier'] = 1, ['type'] = 'Ore', ['mass'] = 1.28, ['volume'] = 1},
-    ['coal'] = {['name'] = 'Coal', ['tier'] = 1, ['type'] = 'Ore', ['mass'] = 1.35, ['volume'] = 1},
+    ['bauxite'] = {['name'] = 'Bauxite', ['tier'] = 1, ['type'] = 'Ore', ['mass'] = 1.281, ['volume'] = 1},
+    ['coal'] = {['name'] = 'Coal', ['tier'] = 1, ['type'] = 'Ore', ['mass'] = 1.346, ['volume'] = 1},
     ['quartz'] = {['name'] = 'Quartz', ['tier'] = 1, ['type'] = 'Ore', ['mass'] = 2.65, ['volume'] = 1},
     ['hematite'] = {['name'] = 'Hematite', ['tier'] = 1, ['type'] = 'Ore', ['mass'] = 5.04, ['volume'] = 1},
     ['chromite'] = {['name'] = 'Chromite', ['tier'] = 2, ['type'] = 'Ore', ['mass'] = 4.54, ['volume'] = 1},
