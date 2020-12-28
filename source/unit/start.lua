@@ -37,6 +37,7 @@ verticalMode = false --export: enable to use on a vertical screen (not yet ready
 showGreen = true --export: if not enable, line with green gauge will be hidden
 showYellow = true --export: if not enable, line with yellow gauge will be hidden
 showRed = true --export: if not enable, line with red gauge will be hidden
+maxAmountOfElementsLoadedBySecond = 2000 --export: the maximum number of element loaded by second on script startup
 showContainerNameColumn = false --export: show or not the column "Container Name"
 showContainerCapacityColumn = false --export: show or not the column "Container Total Capacity"
 
@@ -75,6 +76,7 @@ options.verticalMode = verticalMode
 options.showGreen = showGreen
 options.showYellow = showYellow
 options.showRed = showRed
+options.maxAmountOfElementsLoadedBySecond = maxAmountOfElementsLoadedBySecond
 options.showContainerNameColumn = showContainerNameColumn
 options.showContainerCapacityColumn = showContainerCapacityColumn
 
@@ -100,31 +102,31 @@ for slot_name, slot in pairs(unit) do
     end
 end
 if #screens == 0 then
-    system.printDanger("No Screen Detected")
+    system.print("No Screen Detected")
 else
     --sorting screens by slotname to be sure the display is not changing
     table.sort(screens, function(a,b) return a.slotname < b.slotname end)
     local plural = ""
     if #screens > 1 then plural = "s" end
-    system.printSuccess(#screens .. " screen" .. plural .. " Connected")
+    system.print(#screens .. " screen" .. plural .. " Connected")
 end
 if core == nil then
-    system.printDanger("No Core Detected")
+    system.print("No Core Detected")
 else
-    system.printSuccess("Core Connected")
+    system.print("Core Connected")
 end
 if databank == nil then
-    system.printWarning("No Databank Detected")
+    system.print("No Databank Detected")
 else
-    system.printSuccess("Databank Connected")
+    system.print("Databank Connected")
     if (databank.hasKey("options")) and (useDatabankValues == true) then
         local db_options = json.decode(databank.getStringValue("options"))
         for key, value in pairs(options) do
             if db_options[key] then options[key] = db_options[key] end
         end
-        system.printSuccess("Options Loaded From Databank")
+        system.print("Options Loaded From Databank")
     else
-        system.printWarning("Options Loaded From LUA Parameters")
+        system.print("Options Loaded From LUA Parameters")
     end
 end
 prefixes = {
@@ -152,7 +154,9 @@ titles = {
 elementsIdList = {}
 if core ~= nil then
     elementsIdList = core.getElementIdList()
-    system.printInfo(#elementsIdList .. " elements on the construct")
+    system.print(#elementsIdList .. " elements on the construct")
 end
-
+storageIdList= {}
+initIndex = 0
+unit.setTimer("init", 1)
 unit.setTimer("screenRefresh", 1)

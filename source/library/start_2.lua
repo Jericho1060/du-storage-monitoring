@@ -1,12 +1,25 @@
 --[[
-    Jericho's system.print() extension -- https://github.com/Jericho1060
-    Display content in lua chat channel with colors
-    Source : https://github.com/Jericho1060/DualUniverse/blob/master/tools/console%20text%20colors.lua
+	split a string on a delimiter
+	By jericho
 ]]
-system.printColor = function(message, color) system.print('<span style="color:' .. color .. ';">' .. message .. '</span>') end
-system.printPrimary = function(message) system.printColor(message, "#007bff") end
-system.printSecondary = function(message) system.printColor(message, "#6c757d") end
-system.printSuccess = function (message) system.printColor(message, "#28a745") end
-system.printDanger = function (message) system.printColor(message, "#dc3545") end
-system.printWarning = function (message) system.printColor(message, "#ffc107") end
-system.printInfo = function (message) system.printColor(message, "#17a2b8") end
+function strSplit(s, delimiter)
+    result = {};
+    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match);
+    end
+    return result;
+end
+
+--[[
+	formating numbers by adding a space between thousands by Jericho
+]]
+function format_number(value)
+    local formatted = value
+    while true do
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1 %2')
+        if (k==0) then
+            break
+        end
+    end
+    return formatted
+end

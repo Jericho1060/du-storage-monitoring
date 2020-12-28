@@ -1,5 +1,5 @@
 local storage_elements = {}
-for _,id in pairs(elementsIdList) do
+for _,id in pairs(storageIdList) do
     local elementType = core.getElementTypeById(id)
     if elementType:lower():find("container") then
         local elementName = core.getElementNameById(id)

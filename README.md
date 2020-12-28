@@ -77,6 +77,7 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `showGreen`: if not enable, line with green gauge will be hidden
 - `showYellow`: if not enable, line with yellow gauge will be hidden
 - `showRed`: if not enable, line with red gauge will be hidden
+- `maxAmountOfElementsLoadedBySecond`: the maximum number of element loaded by second on script startup
 - `showContainerNameColumn`: show or not the column "Container Name"
 - `showContainerCapacityColumn`: show or not the column "Container Total Capacity"
 
