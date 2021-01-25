@@ -7,7 +7,8 @@ a simple storage monitoring for Dual Universe
 
 You can join me on Guilded for help or suggestions or requests by following that link : https://guilded.jericho1060.com
 
-#Description
+# Description
+
 It's displaying on a screen the quantity and the percent fill of containers or hub.
 
 It can support up to 9 screens and chose what is display on each (group feature)
@@ -45,7 +46,7 @@ Copy the content of the file config.json then right clik on the board, chose adv
 
 By rightclicking on the board, advanced, edit lua parameters, you can customize these options:
 
-- `useDatabankValues`: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
+- `useDatabankValues`: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, The ones from LUA Parameters will be used. Disable this parameter if you need to update values
 - `containerMonitoringPrefix_screen1`: the prefix value to add to each containers that should be monitored and display on the 1st screen. Default to `MONIT_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen2`: the prefix value to add to each containers that should be monitored and display on the 2nd screen. Default to `s2_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen3`: the prefix value to add to each containers that should be monitored and display on the 3rd screen. Default to `s3_`, you must keep the `_` in that option
