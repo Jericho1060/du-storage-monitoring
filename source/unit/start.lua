@@ -1,7 +1,7 @@
 --[[
 	LUA PARAMETERS
 ]]
-useDatabankValues = true --export: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
+useDatabankValues = false --export: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
 
 containerMonitoringPrefix_screen1 = "MONIT_" --export: the prefix used to enable container monitoring and display on the 1st screen
 containerMonitoringPrefix_screen2 = "s2_" --export: the prefix used to enable container monitoring and display on the 2nd screen
@@ -13,9 +13,9 @@ containerMonitoringPrefix_screen7 = "s7_" --export: the prefix used to enable co
 containerMonitoringPrefix_screen8 = "s8_" --export: the prefix used to enable container monitoring and display on the 8th screen
 containerMonitoringPrefix_screen9 = "s9_" --export: the prefix used to enable container monitoring and display on the 9th screen
 
-screenTitle1 = "title screen 1" --export: the title display on the 1st screen, not displayed if empty or equal to "-"
-screenTitle2 = "title screen 2" --export: the title display on the 2nd screen, not displayed if empty or equal to "-"
-screenTitle3 = "title screen 3" --export: the title display on the 3rd screen, not displayed if empty or equal to "-"
+screenTitle1 = "Pures" --export: the title display on the 1st screen, not displayed if empty or equal to "-"
+screenTitle2 = "Alloys" --export: the title display on the 2nd screen, not displayed if empty or equal to "-"
+screenTitle3 = "Ores" --export: the title display on the 3rd screen, not displayed if empty or equal to "-"
 screenTitle4 = "title screen 4" --export: the title display on the 4th screen, not displayed if empty or equal to "-"
 screenTitle5 = "title screen 5" --export: the title display on the 5th screen, not displayed if empty or equal to "-"
 screenTitle6 = "title screen 6" --export: the title display on the 6th screen, not displayed if empty or equal to "-"
@@ -37,6 +37,7 @@ verticalMode = false --export: enable to use on a vertical screen (not yet ready
 showGreen = true --export: if not enable, line with green gauge will be hidden
 showYellow = true --export: if not enable, line with yellow gauge will be hidden
 showRed = true --export: if not enable, line with red gauge will be hidden
+maxAmountOfElementsLoadedByTick = 2000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 showContainerNameColumn = false --export: show or not the column "Container Name"
 showContainerCapacityColumn = false --export: show or not the column "Container Total Capacity"
 
@@ -45,7 +46,7 @@ showContainerCapacityColumn = false --export: show or not the column "Container 
 ]]
 
 system.print("---------------------------------")
-system.print("DU-Storage-Monitoring version 2.0")
+system.print("DU-Storage-Monitoring version 2.1")
 system.print("---------------------------------")
 
 options = {}
@@ -80,6 +81,7 @@ options.verticalMode = verticalMode
 options.showGreen = showGreen
 options.showYellow = showYellow
 options.showRed = showRed
+options.maxAmountOfElementsLoadedByTick = maxAmountOfElementsLoadedByTick
 options.showContainerNameColumn = showContainerNameColumn
 options.showContainerCapacityColumn = showContainerCapacityColumn
 
@@ -169,16 +171,20 @@ MyCoroutines = {
     function()
         if not initFinished then
             system.print("Loading contructs elements (" .. #elementsIdList .. " elements detected)")
-            for i = 0, #elementsIdList, 1 do
+            for i = 1, #elementsIdList, 1 do
                 initIndex = i
                 local id = elementsIdList[i]
                 local elementType = core.getElementTypeById(id):lower()
                 if elementType:lower():find("container") then
                     table.insert(storageIdList, id)
                 end
+                if (i%options.maxAmountOfElementsLoadedByTick) == 0 then
+                    system.print(i .. ' elements scanned on ' .. #elementsIdList .. ' with ' .. #storageIdList .. " identified")
+                    coroutine.yield(coroutinesTable[1])
+                end
             end
             if initIndex == #elementsIdList then
-                system.print(#storageIdList .. " storage elements identified")
+                system.print(#elementsIdList .. " scanned with " .. #storageIdList .. " storage elements identified")
                 initFinished = true
             end
         end
