@@ -47,7 +47,7 @@ showContainerCapacityColumn = false --export: show or not the column "Container 
 ]]
 
 system.print("-----------------------------------")
-system.print("DU-Storage-Monitoring version 2.2.3")
+system.print("DU-Storage-Monitoring version 2.3.0")
 system.print("-----------------------------------")
 
 options = {}
