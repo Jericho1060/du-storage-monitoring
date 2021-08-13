@@ -45,9 +45,10 @@ showContainerCapacityColumn = false --export: show or not the column "Container 
 	INIT
 ]]
 
-system.print("---------------------------------")
-system.print("DU-Storage-Monitoring version 2.1")
-system.print("---------------------------------")
+
+system.print("-----------------------------------")
+system.print("DU-Storage-Monitoring version 2.2.3")
+system.print("-----------------------------------")
 
 options = {}
 options.containerMonitoringPrefix_screen1 = containerMonitoringPrefix_screen1
