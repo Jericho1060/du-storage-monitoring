@@ -1,7 +1,7 @@
 --[[
 	LUA PARAMETERS
 ]]
-useDatabankValues = true --export: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
+useDatabankValues = false --export: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
 
 containerMonitoringPrefix_screen1 = "MONIT_" --export: the prefix used to enable container monitoring and display on the 1st screen
 containerMonitoringPrefix_screen2 = "s2_" --export: the prefix used to enable container monitoring and display on the 2nd screen
@@ -37,14 +37,14 @@ verticalMode = false --export: enable to use on a vertical screen (not yet ready
 showGreen = true --export: if not enable, line with green gauge will be hidden
 showYellow = true --export: if not enable, line with yellow gauge will be hidden
 showRed = true --export: if not enable, line with red gauge will be hidden
-maxAmountOfElementsLoadedByTick = 2000 --export: the maximum number of element loaded by tick of the coroutine on script startup
+maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
+maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
 showContainerNameColumn = false --export: show or not the column "Container Name"
 showContainerCapacityColumn = false --export: show or not the column "Container Total Capacity"
 
 --[[
 	INIT
 ]]
-
 
 system.print("-----------------------------------")
 system.print("DU-Storage-Monitoring version 2.2.3")
@@ -83,6 +83,7 @@ options.showGreen = showGreen
 options.showYellow = showYellow
 options.showRed = showRed
 options.maxAmountOfElementsLoadedByTick = maxAmountOfElementsLoadedByTick
+options.maxAmountOfElementsRefreshedByTick = maxAmountOfElementsRefreshedByTick
 options.showContainerNameColumn = showContainerNameColumn
 options.showContainerCapacityColumn = showContainerCapacityColumn
 
@@ -192,7 +193,7 @@ MyCoroutines = {
     end,
     function()
         local storage_elements = {}
-        for _,id in pairs(storageIdList) do
+        for elemindex,id in ipairs(storageIdList) do
             local elementType = core.getElementTypeById(id)
             if elementType:lower():find("container") then
                 local elementName = core.getElementNameById(id)
@@ -278,6 +279,9 @@ MyCoroutines = {
                     end
                     table.insert(storage_elements, container)
                 end
+            end
+            if (elemindex%options.maxAmountOfElementsRefreshedByTick) == 0 then
+                coroutine.yield(coroutinesTable[2])
             end
         end
 
