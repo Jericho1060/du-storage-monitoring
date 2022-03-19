@@ -59,7 +59,7 @@ Ingredients = {
     ['goldnuggets'] = {['name'] = 'Gold Nuggets', ['tier'] = 4, ['type'] = 'Ore', ['mass'] = 19.3, ['volume'] = 1},
     ['rhodonite'] = {['name'] = 'Rhodonite', ['tier'] = 5, ['type'] = 'Ore', ['mass'] = 3.76, ['volume'] = 1},
     ['columbite'] = {['name'] = 'Columbite', ['tier'] = 5, ['type'] = 'Ore', ['mass'] = 5.38, ['volume'] = 1},
-    ['illmenite'] = {['name'] = 'Illmenite', ['tier'] = 5, ['type'] = 'Ore', ['mass'] = 4.55, ['volume'] = 1},
+    ['ilmenite'] = {['name'] = 'Ilmenite', ['tier'] = 5, ['type'] = 'Ore', ['mass'] = 4.55, ['volume'] = 1},
     ['vanadinite'] = {['name'] = 'Vanadinite', ['tier'] = 5, ['type'] = 'Ore', ['mass'] = 6.95, ['volume'] = 1},
     ['pureoxygen'] = {['name'] = 'Pure Oxygen', ['tier'] = 0, ['type'] = 'Pure', ['mass'] = 1, ['volume'] = 1},
     ['purehydrogen'] = {['name'] = 'Pure Hydrogen', ['tier'] = 0, ['type'] = 'Pure', ['mass'] = 0.07, ['volume'] = 1},
