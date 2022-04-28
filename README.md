@@ -46,8 +46,8 @@ Copy the content of the file config.json then right clik on the board, chose adv
 
 By rightclicking on the board, advanced, edit lua parameters, you can customize these options:
 
-- `useDatabankValues`: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, The ones from LUA Parameters will be used. Disable this parameter if you need to update values
-- `containerMonitoringPrefix_screen1`: the prefix value to add to each containers that should be monitored and display on the 1st screen. Default to `MONIT_`, you must keep the `_` in that option
+- `useDatabankValues`: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, The ones from LUA Parameters will be used. Disable this parameter if you need to update values. Unchecked by default. 
+- `containerMonitoringPrefix_screen1`: the prefix value to add to each containers that should be monitored and display on the 1st screen. Default to `s1_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen2`: the prefix value to add to each containers that should be monitored and display on the 2nd screen. Default to `s2_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen3`: the prefix value to add to each containers that should be monitored and display on the 3rd screen. Default to `s3_`, you must keep the `_` in that option
 - `containerMonitoringPrefix_screen4`: the prefix value to add to each containers that should be monitored and display on the 4th screen. Default to `s4_`, you must keep the `_` in that option
@@ -73,16 +73,14 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `QuantityRoundedDecimals`: maximum of decimals displayed for the quantity value
 - `PercentRoundedDecimals`: maximum of decimals displayed for the percent fill value
 - `fontSize`: the size of the text for all the screen
-- `borderColor`: the color of the table border
-- `verticalMode`: enable to use on a vertical screen (not yet ready)
 - `showGreen`: if not enable, line with green gauge will be hidden
 - `showYellow`: if not enable, line with yellow gauge will be hidden
 - `showRed`: if not enable, line with red gauge will be hidden
 - `maxAmountOfElementsLoadedByTick`: the maximum number of element loaded by tick of the coroutine on script startup (lower that value if you encounter cpu load errors on startup, default to 5000)
 - `maxAmountOfElementsRefreshedByTick`: the maximum number of element refreshed by tick of the coroutine when refreshing values (lower that value if you have cpu load errors after all emlements are loaded, default to 200)
-- `showContainerNameColumn`: show or not the column "Container Name"
-- `showContainerCapacityColumn`: show or not the column "Container Total Capacity"
 
 # Support or donation
 
 if you like it, [<img src="https://github.com/Jericho1060/DU-Industry-HUD/blob/main/ressources/images/ko-fi.png?raw=true" width="150">](https://ko-fi.com/jericho1060)
+
+You can also donate in game by sending credits to `jericho1060`

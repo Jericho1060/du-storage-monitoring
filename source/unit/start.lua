@@ -3,7 +3,7 @@
 ]]
 useDatabankValues = false --export: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
 
-containerMonitoringPrefix_screen1 = "MONIT_" --export: the prefix used to enable container monitoring and display on the 1st screen
+containerMonitoringPrefix_screen1 = "s1_" --export: the prefix used to enable container monitoring and display on the 1st screen
 containerMonitoringPrefix_screen2 = "s2_" --export: the prefix used to enable container monitoring and display on the 2nd screen
 containerMonitoringPrefix_screen3 = "s3_" --export: the prefix used to enable container monitoring and display on the 3rd screen
 containerMonitoringPrefix_screen4 = "s4_" --export: the prefix used to enable container monitoring and display on the 4th screen
@@ -13,41 +13,37 @@ containerMonitoringPrefix_screen7 = "s7_" --export: the prefix used to enable co
 containerMonitoringPrefix_screen8 = "s8_" --export: the prefix used to enable container monitoring and display on the 8th screen
 containerMonitoringPrefix_screen9 = "s9_" --export: the prefix used to enable container monitoring and display on the 9th screen
 
-screenTitle1 = "Pures" --export: the title display on the 1st screen, not displayed if empty or equal to "-"
-screenTitle2 = "Alloys" --export: the title display on the 2nd screen, not displayed if empty or equal to "-"
-screenTitle3 = "Ores" --export: the title display on the 3rd screen, not displayed if empty or equal to "-"
-screenTitle4 = "title screen 4" --export: the title display on the 4th screen, not displayed if empty or equal to "-"
-screenTitle5 = "title screen 5" --export: the title display on the 5th screen, not displayed if empty or equal to "-"
-screenTitle6 = "title screen 6" --export: the title display on the 6th screen, not displayed if empty or equal to "-"
-screenTitle7 = "title screen 7" --export: the title display on the 7th screen, not displayed if empty or equal to "-"
-screenTitle8 = "title screen 8" --export: the title display on the 8th screen, not displayed if empty or equal to "-"
-screenTitle9 = "title screen 9" --export: the title display on the 9th screen, not displayed if empty or equal to "-"
+screenTitle1 = "-" --export: the title display on the 1st screen, not displayed if empty or equal to "-"
+screenTitle2 = "-" --export: the title display on the 2nd screen, not displayed if empty or equal to "-"
+screenTitle3 = "-" --export: the title display on the 3rd screen, not displayed if empty or equal to "-"
+screenTitle4 = "-" --export: the title display on the 4th screen, not displayed if empty or equal to "-"
+screenTitle5 = "-" --export: the title display on the 5th screen, not displayed if empty or equal to "-"
+screenTitle6 = "-" --export: the title display on the 6th screen, not displayed if empty or equal to "-"
+screenTitle7 = "-" --export: the title display on the 7th screen, not displayed if empty or equal to "-"
+screenTitle8 = "-" --export: the title display on the 8th screen, not displayed if empty or equal to "-"
+screenTitle9 = "-" --export: the title display on the 9th screen, not displayed if empty or equal to "-"
 
-container_proficiency_lvl = 3 --export: Talent level for Container Proficiency
-container_optimization_lvl = 0 --export: Talent level for Container Optimization
+container_proficiency_lvl = 5 --export: Talent level for Container Proficiency
+container_optimization_lvl = 5 --export: Talent level for Container Optimization
 container_fill_red_level = 10 --export: The percent fill below gauge will be red
 container_fill_yellow_level = 50 --export: The percent fill below gauge will be yellow
 groupByItemName = true --export: if enabled, this will group all entries with the same item name
 
 QuantityRoundedDecimals = 2 --export: maximum of decimals displayed for the quantity value
-PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the percent fill value
-fontSize = 2 --export: the size of the text for all the screen
-borderColor = "orange" --export: the color of the table border
-verticalMode = false --export: enable to use on a vertical screen (not yet ready)
+PercentRoundedDecimals = 2 ---export: maximum of decimals displayed for the percent fill value
+fontSize = 15 --export: the size of the text for all the screen
 showGreen = true --export: if not enable, line with green gauge will be hidden
 showYellow = true --export: if not enable, line with yellow gauge will be hidden
 showRed = true --export: if not enable, line with red gauge will be hidden
 maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
-showContainerNameColumn = false --export: show or not the column "Container Name"
-showContainerCapacityColumn = false --export: show or not the column "Container Total Capacity"
 
 --[[
 	INIT
 ]]
 
 system.print("-----------------------------------")
-system.print("DU-Storage-Monitoring version 2.3.0")
+system.print("DU-Storage-Monitoring version 3.0.0")
 system.print("-----------------------------------")
 
 options = {}
@@ -77,15 +73,152 @@ options.groupByItemName = groupByItemName
 options.QuantityRoundedDecimals = QuantityRoundedDecimals
 options.PercentRoundedDecimals = PercentRoundedDecimals
 options.fontSize = fontSize
-options.borderColor = borderColor
-options.verticalMode = verticalMode
 options.showGreen = showGreen
 options.showYellow = showYellow
 options.showRed = showRed
 options.maxAmountOfElementsLoadedByTick = maxAmountOfElementsLoadedByTick
 options.maxAmountOfElementsRefreshedByTick = maxAmountOfElementsRefreshedByTick
-options.showContainerNameColumn = showContainerNameColumn
-options.showContainerCapacityColumn = showContainerCapacityColumn
+
+local renderScript = [[
+local json = require('dkjson')
+local data = json.decode(getInput()) or {}
+
+local rx,ry = getResolution()
+
+local back=createLayer()
+local front=createLayer()
+
+font_size = data[1][7]
+
+local mini=loadFont('Play',12)
+local small=loadFont('Play',14)
+local smallBold=loadFont('Play-Bold',18)
+local itemName=loadFont('Play-Bold',font_size)
+local medV=loadFont('Play-Bold', 25)
+local bigV=loadFont('Play-Bold', 30)
+local big=loadFont('Play',38)
+
+setBackgroundColor( 15/255,24/255,29/255)
+
+setDefaultStrokeColor( back,Shape_Line,0,0,0,0.5)
+setDefaultShadow( back,Shape_Line,6,0,0,0,0.5)
+
+setDefaultFillColor( front,Shape_BoxRounded,249/255,212/255,123/255,1)
+setDefaultFillColor( front,Shape_Text,0,0,0,1)
+setDefaultFillColor( front,Shape_Box,0.075,0.125,0.156,1)
+setDefaultFillColor( front,Shape_Text,0.710,0.878,0.941,1)
+
+function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
+
+function round(a,b)if b then return utils.round(a/b)*b end;return a>=0 and math.floor(a+0.5)or math.ceil(a-0.5)end
+
+function renderHeader(title, subtitle)
+    local h_factor = 12
+    local h = 35
+    if subtitle ~= nil and subtitle ~= "" then
+        h = 50
+    end
+    addLine( back,0,h+12,rx,h+12)
+    addBox(front,0,12,rx,h)
+    --setNextFillColor( front,110/255,166/255,181/255,1)
+    if subtitle == nil or subtitle == "" then
+        addText(front,smallBold,title,44,35)
+    else
+        --addText(front,smallBold,title .. " - " .. subtitle,44,35)
+        addText(front,big,subtitle,44,50)
+        addText(front,smallBold,title,rx-250,40)
+    end
+end
+
+local storageBar = createLayer()
+setDefaultFillColor(storageBar,Shape_Text,110/255,166/255,181/255,1)
+setDefaultFillColor(storageBar,Shape_Box,0.075,0.125,0.156,1)
+setDefaultFillColor(storageBar,Shape_Line,1,1,1,1)
+
+local storageYellow = createLayer()
+setDefaultFillColor(storageYellow,Shape_Text,249/255,212/255,123/255,1)
+setDefaultFillColor(storageYellow,Shape_Box,249/255,212/255,123/255,1)
+
+local storageDark = createLayer()
+setDefaultFillColor(storageDark,Shape_Text,63/255,92/255,102/255,1)
+setDefaultFillColor(storageDark,Shape_Box,13/255,24/255,28/255,1)
+
+local storageRed = createLayer()
+setDefaultFillColor(storageRed,Shape_Text,177/255,42/255,42/255,1)
+setDefaultFillColor(storageRed,Shape_Box,177/255,42/255,42/255,1)
+
+local storageGreen = createLayer()
+setDefaultFillColor(storageGreen,Shape_Text,34/255,177/255,76/255,1)
+setDefaultFillColor(storageGreen,Shape_Box,34/255,177/255,76/255,1)
+
+function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitle)
+    local colorLayer = storageGreen
+    if percent <= data[1][3] then
+        colorLayer = storageYellow
+    end
+    if percent <= data[1][2] then
+        colorLayer = storageRed
+    end
+
+    local quantity_x_pos = font_size * 6.7
+    local percent_x_pos = font_size * 2
+
+    addBox(storageBar,x,y,w,h)
+
+    if withTitle then
+        addText(storageBar, small, "ITEMS", x, y-5)
+        setNextTextAlign(storageDark, AlignH_Center, AlignV_Bottom)
+        addText(storageDark, small, "MAX VOLUME", x+(w*0.5), y-3)
+        setNextTextAlign(storageBar, AlignH_Center, AlignV_Bottom)
+        addText(storageBar, small, "QUANTITY", x+(w*0.75), y-3)
+        addText(storageBar, small, "STORAGE", x+w-60, y-5)
+    end
+
+    local pos_y = y+(h/2)-2
+
+    setNextTextAlign(storageBar, AlignH_Left, AlignV_Middle)
+    addText(storageBar, itemName, title, x+10, pos_y)
+
+    addBox(colorLayer,x,y+h-3,w*(percent)/100,3)
+
+    setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
+    addText(storageDark, itemName, format_number(max) .. ' L', x+(w*0.5), pos_y)
+
+    setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
+    addText(storageBar, itemName, format_number(quantity), x+(w*0.75), pos_y)
+
+    setNextTextAlign(colorLayer, AlignH_Right, AlignV_Middle)
+    addText(colorLayer, itemName, format_number(percent) .."%", x+w-10, pos_y)
+
+    --addBox(storageDark,x+w-400,y+5,390,20)
+end
+
+local screen_title = data[1][1]
+renderHeader('STORAGE MONITORING', screen_title)
+
+start_h = 75
+if screen_title ~= nil and screen_title ~= "" then
+    start_h = 100
+end
+
+
+local h = font_size + font_size / 2
+for i,container in ipairs(data[2]) do
+    renderResistanceBar(container[1], container[2], container[3], container[4], 44, start_h, rx-88, h, i==1)
+    start_h = start_h+h+5
+end
+requestAnimationFrame(10)
+]]
+
+--[[
+	split a string on a delimiter By jericho
+]]
+function strSplit(a,b)result={}for c in(a..b):gmatch("(.-)"..b)do table.insert(result,c)end;return result end
+
+--[[
+	formating numbers by adding a space between thousands by Jericho
+]]
+function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
 
 core = nil
 databank = nil
@@ -102,6 +235,7 @@ for slot_name, slot in pairs(unit) do
         if slot.getElementClass():lower() == 'screenunit' then
             slot.slotname = slot_name
             table.insert(screens,slot)
+            slot.setRenderScript(renderScript)
         end
         if slot.getElementClass():lower() == 'databankunit' then
             databank = slot
@@ -253,15 +387,12 @@ MyCoroutines = {
                             container_amount = splitted[4]
                         end
                         local volume = 0
-                        if container_size:lower() == "xxl" then volume = 512000
-                        elseif container_size:lower() == "xl" then volume = 256000
-                        elseif container_size:lower() == "l" then volume = 128000
-                        elseif container_size:lower() == "m" then volume = 64000
-                        elseif container_size:lower() == "s" then volume = 8000
-                        elseif container_size:lower() == "xs" then volume = 1000
+                        container_volume_list = {xxl=512000, xl=256000, l=128000, m=64000, s=8000, xs=1000}
+                        container_size = container_size:lower()
+                        if container_volume_list[container_size] then
+                            volume = container_volume_list[container_size]
                         end
-                        container_volume = volume * (options.container_proficiency_lvl * 0.1) + volume
-                        container_volume = container_volume * tonumber(container_amount)
+                        container_volume = (volume * options.container_proficiency_lvl * 0.1 + volume) * tonumber(container_amount)
                         container_empty_mass = getIngredient("Container Hub").mass
                     end
                     local totalMass = core.getElementMassById(id)
@@ -320,105 +451,46 @@ MyCoroutines = {
         end
 
         if #screens > 0 then
-            local widthUnit = "vw"
-            local heightUnit = "vh"
-            if options.verticalMode then
-                widthUnit = "vh"
-                heightUnit = "vw"
-            end
-            local css = [[
-            <style>
-            * {
-            text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
-        }
-            ]]
-            if options.verticalMode then
-                css = css .. [[
-                .container{
-                width:100]] .. widthUnit .. [[;
-                transform:rotate(-90deg);
-                transform-origin:0% 0%;
-                margin-top:100vh;
-            }
-                ]]
-            end
-            css = css .. [[
-            .row {
-            border-bottom:2px solid ]] .. options.borderColor .. [[;
-            font-size: ]] .. tostring(options.fontSize) .. [[vw;
-            width:100]] .. widthUnit .. [[;
-        }
-            </style>
-            ]]
             for index, screen in pairs(screens) do
+                screen_data = {}
                 local prefix = prefixes[index]
                 local title = titles[index]
-                local html = [[<div class="container">]]
-                if (title:len() > 0) and (title ~= "-") then
-                    html = html .. [[
-                    <div class="row">
-                    <div class="col text-center" style="font-size:5vw;">
-                    ]] .. title .. [[
-                    </div>
-                    </div>
-                    ]]
-                end
-                html = html .. [[
-                <div class="row">
-                <div class="col-1 text-center">Tier</div>
-                ]]
-                if options.showContainerNameColumn then
-                    html = html .. [[<div class="col">Container Name</div>]]
-                end
-                if options.showContainerCapacityColumn then
-                    html = html .. [[<div class="col">Capacity</div>]]
-                end
-                html = html .. [[
-                <div class="col">Item Name</div>
-                <div class="col">Amount</div>
-                <div class="col-2 text-center">Percent Fill</div>
-                </div>
-                ]]
 
                 for tier_k,tier in pairs(tiers) do
                     for _,container in pairs(tier) do
                         if container.prefix:lower():find(prefix:lower()) then
-                            local gauge_color_class = "bg-success"
-                            local text_color_class = "text-success"
                             local show = showGreen
                             if container.percent < options.container_fill_red_level then
-                                gauge_color_class = "bg-danger"
-                                text_color_class = "text-danger"
                                 show = showRed
                             elseif  container.percent < options.container_fill_yellow_level then
-                                gauge_color_class = "bg-warning"
-                                text_color_class = "text-warning"
                                 show = showYellow
                             end
                             if show == true then
-                                html = html .. [[
-                                <div class="row ]] .. text_color_class ..[[">
-                                <div class="]] .. gauge_color_class .. [[" style="width:]] .. container.percent .. [[%;position:absolute;height:100%;">&nbsp;</div>
-                                <div class="col-1 text-center">]] .. tier_k-1 .. [[</div>
-                                ]]
-                                if options.showContainerNameColumn then
-                                    html = html .. [[<div class="col">]] .. container.realName .. "</div>"
-                                end
-                                if options.showContainerCapacityColumn then
-                                    html = html .. [[<div class="col">]] .. format_number(utils.round(container.volume)) .. "</div>"
-                                end
-                                html = html .. [[
-                                <div class="col">]] .. container.ingredient.name .. [[</div>
-                                <div class="col">]] .. format_number(utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals)) .. [[</div>
-                                <div class="col-2 text-center">]] .. format_number(utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals)) .. [[%</div>
-                                </div>
-                                ]]
+                                local storage_data = {
+                                    container.ingredient.name,
+                                    utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals),
+                                    utils.round(container.volume),
+                                    --tier_k-1
+                                    utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals)
+                                }
+                                table.insert(screen_data, storage_data)
                             end
                         end
                     end
                 end
-                html = html .. [[</div>]]
-                screen.setHTML(css .. bootstrap_css .. html)
+                local data_to_send = {
+                    {
+                        titles[index],
+                        options.container_fill_red_level,
+                        options.container_fill_yellow_level,
+                        options.showGreen,
+                        options.showYellow,
+                        options.showRed,
+                        options.fontSize
+                    },
+                    screen_data
+                }
+                screen.setScriptInput(json.encode(data_to_send))
             end
         end
     end
