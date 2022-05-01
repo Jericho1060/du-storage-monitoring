@@ -115,7 +115,7 @@ function round(a,b)if b then return utils.round(a/b)*b end;return a>=0 and math.
 function renderHeader(title, subtitle)
     local h_factor = 12
     local h = 35
-    if subtitle ~= nil and subtitle ~= "" then
+    if subtitle ~= nil and subtitle ~= "" and subtitle ~= "-" then
         h = 50
     end
     addLine( back,0,h+12,rx,h+12)
