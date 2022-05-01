@@ -3,15 +3,15 @@
 ]]
 useDatabankValues = false --export: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
 
-containerMonitoringPrefix_screen1 = "s1_" --export: the prefix used to enable container monitoring and display on the 1st screen
-containerMonitoringPrefix_screen2 = "s2_" --export: the prefix used to enable container monitoring and display on the 2nd screen
-containerMonitoringPrefix_screen3 = "s3_" --export: the prefix used to enable container monitoring and display on the 3rd screen
-containerMonitoringPrefix_screen4 = "s4_" --export: the prefix used to enable container monitoring and display on the 4th screen
-containerMonitoringPrefix_screen5 = "s5_" --export: the prefix used to enable container monitoring and display on the 5th screen
-containerMonitoringPrefix_screen6 = "s6_" --export: the prefix used to enable container monitoring and display on the 6th screen
-containerMonitoringPrefix_screen7 = "s7_" --export: the prefix used to enable container monitoring and display on the 7th screen
-containerMonitoringPrefix_screen8 = "s8_" --export: the prefix used to enable container monitoring and display on the 8th screen
-containerMonitoringPrefix_screen9 = "s9_" --export: the prefix used to enable container monitoring and display on the 9th screen
+Prefix_screen1 = "s1_" --export: the prefix used to enable container monitoring and display on the 1st screen
+Prefix_screen2 = "s2_" --export: the prefix used to enable container monitoring and display on the 2nd screen
+Prefix_screen3 = "s3_" --export: the prefix used to enable container monitoring and display on the 3rd screen
+Prefix_screen4 = "s4_" --export: the prefix used to enable container monitoring and display on the 4th screen
+Prefix_screen5 = "s5_" --export: the prefix used to enable container monitoring and display on the 5th screen
+Prefix_screen6 = "s6_" --export: the prefix used to enable container monitoring and display on the 6th screen
+Prefix_screen7 = "s7_" --export: the prefix used to enable container monitoring and display on the 7th screen
+Prefix_screen8 = "s8_" --export: the prefix used to enable container monitoring and display on the 8th screen
+Prefix_screen9 = "s9_" --export: the prefix used to enable container monitoring and display on the 9th screen
 
 screenTitle1 = "-" --export: the title display on the 1st screen, not displayed if empty or equal to "-"
 screenTitle2 = "-" --export: the title display on the 2nd screen, not displayed if empty or equal to "-"
@@ -47,15 +47,15 @@ system.print("DU-Storage-Monitoring version 3.0.0")
 system.print("-----------------------------------")
 
 options = {}
-options.containerMonitoringPrefix_screen1 = containerMonitoringPrefix_screen1
-options.containerMonitoringPrefix_screen2 = containerMonitoringPrefix_screen2
-options.containerMonitoringPrefix_screen3 = containerMonitoringPrefix_screen3
-options.containerMonitoringPrefix_screen4 = containerMonitoringPrefix_screen4
-options.containerMonitoringPrefix_screen5 = containerMonitoringPrefix_screen5
-options.containerMonitoringPrefix_screen6 = containerMonitoringPrefix_screen6
-options.containerMonitoringPrefix_screen7 = containerMonitoringPrefix_screen7
-options.containerMonitoringPrefix_screen8 = containerMonitoringPrefix_screen8
-options.containerMonitoringPrefix_screen9 = containerMonitoringPrefix_screen9
+options.containerMonitoringPrefix_screen1 = Prefix_screen1
+options.containerMonitoringPrefix_screen2 = Prefix_screen2
+options.containerMonitoringPrefix_screen3 = Prefix_screen3
+options.containerMonitoringPrefix_screen4 = Prefix_screen4
+options.containerMonitoringPrefix_screen5 = Prefix_screen5
+options.containerMonitoringPrefix_screen6 = Prefix_screen6
+options.containerMonitoringPrefix_screen7 = Prefix_screen7
+options.containerMonitoringPrefix_screen8 = Prefix_screen8
+options.containerMonitoringPrefix_screen9 = Prefix_screen9
 options.screenTitle1 = screenTitle1
 options.screenTitle2 = screenTitle2
 options.screenTitle3 = screenTitle3
@@ -120,13 +120,11 @@ function renderHeader(title, subtitle)
     end
     addLine( back,0,h+12,rx,h+12)
     addBox(front,0,12,rx,h)
-    --setNextFillColor( front,110/255,166/255,181/255,1)
-    if subtitle == nil or subtitle == "" then
-        addText(front,smallBold,title,44,35)
-    else
-        --addText(front,smallBold,title .. " - " .. subtitle,44,35)
+    if subtitle ~= nil and subtitle ~= "" and subtitle ~= "-" then
         addText(front,big,subtitle,44,50)
         addText(front,smallBold,title,rx-250,40)
+    else
+        addText(front,smallBold,title,44,35)
     end
 end
 
