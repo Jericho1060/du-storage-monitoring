@@ -30,7 +30,7 @@ container_fill_yellow_level = 50 --export: The percent fill below gauge will be 
 groupByItemName = true --export: if enabled, this will group all entries with the same item name
 
 QuantityRoundedDecimals = 2 --export: maximum of decimals displayed for the quantity value
-PercentRoundedDecimals = 2 ---export: maximum of decimals displayed for the percent fill value
+PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the percent fill value
 fontSize = 15 --export: the size of the text for all the screen
 showGreen = true --export: if not enable, line with green gauge will be hidden
 showYellow = true --export: if not enable, line with yellow gauge will be hidden
