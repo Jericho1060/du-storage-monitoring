@@ -3,15 +3,15 @@
 ]]
 useDatabankValues = false --export: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, following ones will be used
 
-Prefix_screen1 = "s1_" --export: the prefix used to enable container monitoring and display on the 1st screen
-Prefix_screen2 = "s2_" --export: the prefix used to enable container monitoring and display on the 2nd screen
-Prefix_screen3 = "s3_" --export: the prefix used to enable container monitoring and display on the 3rd screen
-Prefix_screen4 = "s4_" --export: the prefix used to enable container monitoring and display on the 4th screen
-Prefix_screen5 = "s5_" --export: the prefix used to enable container monitoring and display on the 5th screen
-Prefix_screen6 = "s6_" --export: the prefix used to enable container monitoring and display on the 6th screen
-Prefix_screen7 = "s7_" --export: the prefix used to enable container monitoring and display on the 7th screen
-Prefix_screen8 = "s8_" --export: the prefix used to enable container monitoring and display on the 8th screen
-Prefix_screen9 = "s9_" --export: the prefix used to enable container monitoring and display on the 9th screen
+PrefixScreen1 = "s1_" --export: the prefix used to enable container monitoring and display on the 1st screen
+PrefixScreen2 = "s2_" --export: the prefix used to enable container monitoring and display on the 2nd screen
+PrefixScreen3 = "s3_" --export: the prefix used to enable container monitoring and display on the 3rd screen
+PrefixScreen4 = "s4_" --export: the prefix used to enable container monitoring and display on the 4th screen
+PrefixScreen5 = "s5_" --export: the prefix used to enable container monitoring and display on the 5th screen
+PrefixScreen6 = "s6_" --export: the prefix used to enable container monitoring and display on the 6th screen
+PrefixScreen7 = "s7_" --export: the prefix used to enable container monitoring and display on the 7th screen
+PrefixScreen8 = "s8_" --export: the prefix used to enable container monitoring and display on the 8th screen
+PrefixScreen9 = "s9_" --export: the prefix used to enable container monitoring and display on the 9th screen
 
 screenTitle1 = "-" --export: the title display on the 1st screen, not displayed if empty or equal to "-"
 screenTitle2 = "-" --export: the title display on the 2nd screen, not displayed if empty or equal to "-"
@@ -23,10 +23,10 @@ screenTitle7 = "-" --export: the title display on the 7th screen, not displayed 
 screenTitle8 = "-" --export: the title display on the 8th screen, not displayed if empty or equal to "-"
 screenTitle9 = "-" --export: the title display on the 9th screen, not displayed if empty or equal to "-"
 
-container_proficiency_lvl = 5 --export: Talent level for Container Proficiency
-container_optimization_lvl = 5 --export: Talent level for Container Optimization
-container_fill_red_level = 10 --export: The percent fill below gauge will be red
-container_fill_yellow_level = 50 --export: The percent fill below gauge will be yellow
+containerProficiencyLvl = 5 --export: Talent level for Container Proficiency
+containerOptimizationLvl = 5 --export: Talent level for Container Optimization
+containerFillRedLevel = 10 --export: The percent fill below gauge will be red
+containerFillYellowLevel = 50 --export: The percent fill below gauge will be yellow
 groupByItemName = true --export: if enabled, this will group all entries with the same item name
 
 QuantityRoundedDecimals = 2 --export: maximum of decimals displayed for the quantity value
@@ -47,15 +47,15 @@ system.print("DU-Storage-Monitoring version 3.0.0")
 system.print("-----------------------------------")
 
 options = {}
-options.containerMonitoringPrefix_screen1 = Prefix_screen1
-options.containerMonitoringPrefix_screen2 = Prefix_screen2
-options.containerMonitoringPrefix_screen3 = Prefix_screen3
-options.containerMonitoringPrefix_screen4 = Prefix_screen4
-options.containerMonitoringPrefix_screen5 = Prefix_screen5
-options.containerMonitoringPrefix_screen6 = Prefix_screen6
-options.containerMonitoringPrefix_screen7 = Prefix_screen7
-options.containerMonitoringPrefix_screen8 = Prefix_screen8
-options.containerMonitoringPrefix_screen9 = Prefix_screen9
+options.containerMonitoringPrefix_screen1 = PrefixScreen1
+options.containerMonitoringPrefix_screen2 = PrefixScreen2
+options.containerMonitoringPrefix_screen3 = PrefixScreen3
+options.containerMonitoringPrefix_screen4 = PrefixScreen4
+options.containerMonitoringPrefix_screen5 = PrefixScreen5
+options.containerMonitoringPrefix_screen6 = PrefixScreen6
+options.containerMonitoringPrefix_screen7 = PrefixScreen7
+options.containerMonitoringPrefix_screen8 = PrefixScreen8
+options.containerMonitoringPrefix_screen9 = PrefixScreen9
 options.screenTitle1 = screenTitle1
 options.screenTitle2 = screenTitle2
 options.screenTitle3 = screenTitle3
@@ -65,10 +65,10 @@ options.screenTitle6 = screenTitle6
 options.screenTitle7 = screenTitle7
 options.screenTitle8 = screenTitle8
 options.screenTitle9 = screenTitle9
-options.container_proficiency_lvl = container_proficiency_lvl
-options.container_optimization_lvl = container_optimization_lvl
-options.container_fill_red_level = container_fill_red_level
-options.container_fill_yellow_level = container_fill_yellow_level
+options.container_proficiency_lvl = containerProficiencyLvl
+options.container_optimization_lvl = containerOptimizationLvl
+options.container_fill_red_level = containerFillRedLevel
+options.container_fill_yellow_level = containerFillYellowLevel
 options.groupByItemName = groupByItemName
 options.QuantityRoundedDecimals = QuantityRoundedDecimals
 options.PercentRoundedDecimals = PercentRoundedDecimals
@@ -214,7 +214,7 @@ requestAnimationFrame(10)
 function strSplit(a,b)result={}for c in(a..b):gmatch("(.-)"..b)do table.insert(result,c)end;return result end
 
 --[[
-	formating numbers by adding a space between thousands by Jericho
+	formatting numbers by adding a space between thousands by Jericho
 ]]
 function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
 

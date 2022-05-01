@@ -17,7 +17,7 @@ To add a container to the system, you must rename it following that pattern: `<p
 For a Hub, you must use that pattern: `<prefix>_<itemName>_<containserSize>_<amountOfContainers>`
 
 - `<prefix>`: the prefix that enable monitoring, by default `MONIT`, see options to customize it
-- `<itemName`: the real item name in english
+- `<itemName>`: the real item name in english. WARNING, this one will be replaced by the item id in a future version, the list with all IDs will be provided
 - `<containerSize>`: if a hub, the size of the containers linked (default to XS)
 - `<amountOfContainers>`: if a hub, the amount of containers linked
 
@@ -47,15 +47,15 @@ Copy the content of the file config.json then right clik on the board, chose adv
 By rightclicking on the board, advanced, edit lua parameters, you can customize these options:
 
 - `useDatabankValues`: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, The ones from LUA Parameters will be used. Disable this parameter if you need to update values. Unchecked by default. 
-- `containerMonitoringPrefix_screen1`: the prefix value to add to each containers that should be monitored and display on the 1st screen. Default to `s1_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen2`: the prefix value to add to each containers that should be monitored and display on the 2nd screen. Default to `s2_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen3`: the prefix value to add to each containers that should be monitored and display on the 3rd screen. Default to `s3_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen4`: the prefix value to add to each containers that should be monitored and display on the 4th screen. Default to `s4_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen5`: the prefix value to add to each containers that should be monitored and display on the 5th screen. Default to `s5_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen6`: the prefix value to add to each containers that should be monitored and display on the 6th screen. Default to `s6_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen7`: the prefix value to add to each containers that should be monitored and display on the 7th screen. Default to `s7_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen8`: the prefix value to add to each containers that should be monitored and display on the 8th screen. Default to `s8_`, you must keep the `_` in that option
-- `containerMonitoringPrefix_screen9`: the prefix value to add to each containers that should be monitored and display on the 9th screen. Default to `s9_`, you must keep the `_` in that option 
+- `PrefixScreen1`: the prefix value to add to each containers that should be monitored and display on the 1st screen. Default to `s1_`, you must keep the `_` in that option
+- `PrefixScreen2`: the prefix value to add to each containers that should be monitored and display on the 2nd screen. Default to `s2_`, you must keep the `_` in that option
+- `PrefixScreen3`: the prefix value to add to each containers that should be monitored and display on the 3rd screen. Default to `s3_`, you must keep the `_` in that option
+- `PrefixScreen4`: the prefix value to add to each containers that should be monitored and display on the 4th screen. Default to `s4_`, you must keep the `_` in that option
+- `PrefixScreen5`: the prefix value to add to each containers that should be monitored and display on the 5th screen. Default to `s5_`, you must keep the `_` in that option
+- `PrefixScreen6`: the prefix value to add to each containers that should be monitored and display on the 6th screen. Default to `s6_`, you must keep the `_` in that option
+- `PrefixScreen7`: the prefix value to add to each containers that should be monitored and display on the 7th screen. Default to `s7_`, you must keep the `_` in that option
+- `PrefixScreen8`: the prefix value to add to each containers that should be monitored and display on the 8th screen. Default to `s8_`, you must keep the `_` in that option
+- `PrefixScreen9`: the prefix value to add to each containers that should be monitored and display on the 9th screen. Default to `s9_`, you must keep the `_` in that option 
 - `screenTitle1`: the title display on the 1st screen, not displayed if empty or equal to "-"
 - `screenTitle2`: the title display on the 2nd screen, not displayed if empty or equal to "-"
 - `screenTitle3`: the title display on the 3rd screen, not displayed if empty or equal to "-"
@@ -65,10 +65,10 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `screenTitle7`: the title display on the 7th screen, not displayed if empty or equal to "-"
 - `screenTitle8`: the title display on the 8th screen, not displayed if empty or equal to "-"
 - `screenTitle9`: the title display on the 9th screen, not displayed if empty or equal to "-"
-- `container_proficiency_lvl`: Talent level for Container Proficiency
-- `container_optimization_lvl`: Talent level for Container Optimization
-- `container_fill_red_level`: The percent fill below gauge will be red
-- `container_fill_yellow_level`: The percent fill below gauge will be yellow
+- `containerProficiencyLvl`: Talent level for Container Proficiency
+- `containerOptimizationLvl`: Talent level for Container Optimization
+- `containerFillRedLevel`: The percent fill below gauge will be red
+- `containerFillYellowLevel`: The percent fill below gauge will be yellow
 - `groupByItemName`: if enabled, this will group all entries with the same item name (enabled by default)
 - `QuantityRoundedDecimals`: maximum of decimals displayed for the quantity value
 - `PercentRoundedDecimals`: maximum of decimals displayed for the percent fill value
