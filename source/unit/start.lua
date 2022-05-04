@@ -25,16 +25,11 @@ screenTitle9 = "-" --export: the title display on the 9th screen, not displayed 
 
 containerProficiencyLvl = 5 --export: Talent level for Container Proficiency
 containerOptimizationLvl = 5 --export: Talent level for Container Optimization
-containerFillRedLevel = 10 --export: The percent fill below gauge will be red
-containerFillYellowLevel = 50 --export: The percent fill below gauge will be yellow
 groupByItemName = true --export: if enabled, this will group all entries with the same item name
 
 QuantityRoundedDecimals = 2 --export: maximum of decimals displayed for the quantity value
 PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the percent fill value
 fontSize = 15 --export: the size of the text for all the screen
-showGreen = true --export: if not enable, line with green gauge will be hidden
-showYellow = true --export: if not enable, line with yellow gauge will be hidden
-showRed = true --export: if not enable, line with red gauge will be hidden
 maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
 
@@ -43,7 +38,7 @@ maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element
 ]]
 
 system.print("-----------------------------------")
-system.print("DU-Storage-Monitoring version 3.0.0")
+system.print("DU-Storage-Monitoring version 3.1.0")
 system.print("-----------------------------------")
 
 options = {}
@@ -67,15 +62,10 @@ options.screenTitle8 = screenTitle8
 options.screenTitle9 = screenTitle9
 options.container_proficiency_lvl = containerProficiencyLvl
 options.container_optimization_lvl = containerOptimizationLvl
-options.container_fill_red_level = containerFillRedLevel
-options.container_fill_yellow_level = containerFillYellowLevel
 options.groupByItemName = groupByItemName
 options.QuantityRoundedDecimals = QuantityRoundedDecimals
 options.PercentRoundedDecimals = PercentRoundedDecimals
 options.fontSize = fontSize
-options.showGreen = showGreen
-options.showYellow = showYellow
-options.showRed = showRed
 options.maxAmountOfElementsLoadedByTick = maxAmountOfElementsLoadedByTick
 options.maxAmountOfElementsRefreshedByTick = maxAmountOfElementsRefreshedByTick
 
@@ -88,7 +78,7 @@ local rx,ry = getResolution()
 local back=createLayer()
 local front=createLayer()
 
-font_size = data[1][7]
+font_size = data[1][2]
 
 local mini=loadFont('Play',12)
 local small=loadFont('Play',14)
@@ -112,6 +102,8 @@ function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%
 
 function round(a,b)if b then return utils.round(a/b)*b end;return a>=0 and math.floor(a+0.5)or math.ceil(a-0.5)end
 
+function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local k=0;local l=0;local m=0;if a>=.5 then a=(a-0.5)*2;k=e-a*(e-h)l=f-a*(f-i)m=g-a*(g-j)else a=a*2;k=b-a*(b-e)l=c-a*(c-f)m=d-a*(d-g)end;return k,l,m end
+
 function renderHeader(title, subtitle)
     local h_factor = 12
     local h = 35
@@ -133,30 +125,14 @@ setDefaultFillColor(storageBar,Shape_Text,110/255,166/255,181/255,1)
 setDefaultFillColor(storageBar,Shape_Box,0.075,0.125,0.156,1)
 setDefaultFillColor(storageBar,Shape_Line,1,1,1,1)
 
-local storageYellow = createLayer()
-setDefaultFillColor(storageYellow,Shape_Text,249/255,212/255,123/255,1)
-setDefaultFillColor(storageYellow,Shape_Box,249/255,212/255,123/255,1)
-
 local storageDark = createLayer()
 setDefaultFillColor(storageDark,Shape_Text,63/255,92/255,102/255,1)
 setDefaultFillColor(storageDark,Shape_Box,13/255,24/255,28/255,1)
 
-local storageRed = createLayer()
-setDefaultFillColor(storageRed,Shape_Text,177/255,42/255,42/255,1)
-setDefaultFillColor(storageRed,Shape_Box,177/255,42/255,42/255,1)
-
-local storageGreen = createLayer()
-setDefaultFillColor(storageGreen,Shape_Text,34/255,177/255,76/255,1)
-setDefaultFillColor(storageGreen,Shape_Box,34/255,177/255,76/255,1)
+local colorLayer = createLayer()
 
 function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitle)
-    local colorLayer = storageGreen
-    if percent <= data[1][3] then
-        colorLayer = storageYellow
-    end
-    if percent <= data[1][2] then
-        colorLayer = storageRed
-    end
+    local r,g,b = getRGBGradient(percent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
 
     local quantity_x_pos = font_size * 6.7
     local percent_x_pos = font_size * 2
@@ -177,6 +153,7 @@ function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitl
     setNextTextAlign(storageBar, AlignH_Left, AlignV_Middle)
     addText(storageBar, itemName, title, x+10, pos_y)
 
+    setNextFillColor(colorLayer, r, g, b, 1)
     addBox(colorLayer,x,y+h-3,w*(percent)/100,3)
 
     setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
@@ -185,10 +162,9 @@ function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitl
     setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
     addText(storageBar, itemName, format_number(quantity), x+(w*0.75), pos_y)
 
+    setNextFillColor(colorLayer, r, g, b, 1)
     setNextTextAlign(colorLayer, AlignH_Right, AlignV_Middle)
     addText(colorLayer, itemName, format_number(percent) .."%", x+w-10, pos_y)
-
-    --addBox(storageDark,x+w-400,y+5,390,20)
 end
 
 local screen_title = data[1][1]
@@ -457,33 +433,19 @@ MyCoroutines = {
                 for tier_k,tier in pairs(tiers) do
                     for _,container in pairs(tier) do
                         if container.prefix:lower():find(prefix:lower()) then
-                            local show = showGreen
-                            if container.percent < options.container_fill_red_level then
-                                show = showRed
-                            elseif  container.percent < options.container_fill_yellow_level then
-                                show = showYellow
-                            end
-                            if show == true then
-                                local storage_data = {
-                                    container.ingredient.name,
-                                    utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals),
-                                    utils.round(container.volume),
-                                    --tier_k-1
-                                    utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals)
-                                }
-                                table.insert(screen_data, storage_data)
-                            end
+                            local storage_data = {
+                                container.ingredient.name,
+                                utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals),
+                                utils.round(container.volume),
+                                utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals)
+                            }
+                            table.insert(screen_data, storage_data)
                         end
                     end
                 end
                 local data_to_send = {
                     {
                         titles[index],
-                        options.container_fill_red_level,
-                        options.container_fill_yellow_level,
-                        options.showGreen,
-                        options.showYellow,
-                        options.showRed,
                         options.fontSize
                     },
                     screen_data
