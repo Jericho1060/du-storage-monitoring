@@ -38,7 +38,7 @@ maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element
 ]]
 
 system.print("-----------------------------------")
-system.print("DU-Storage-Monitoring version 3.1.0")
+system.print("DU-Storage-Monitoring version 3.2.0")
 system.print("-----------------------------------")
 
 options = {}
@@ -201,17 +201,17 @@ for slot_name, slot in pairs(unit) do
     if
     type(slot) == "table"
             and type(slot.export) == "table"
-            and slot.getElementClass
+            and slot.getClass
     then
-        if slot.getElementClass():lower():find("coreunit") then
+        if slot.getClass():lower():find("coreunit") then
             core = slot
         end
-        if slot.getElementClass():lower() == 'screenunit' then
+        if slot.getClass():lower() == 'screenunit' then
             slot.slotname = slot_name
             table.insert(screens,slot)
             slot.setRenderScript(renderScript)
         end
-        if slot.getElementClass():lower() == 'databankunit' then
+        if slot.getClass():lower() == 'databankunit' then
             databank = slot
         end
     end
@@ -284,7 +284,7 @@ MyCoroutines = {
             for i = 1, #elementsIdList, 1 do
                 initIndex = i
                 local id = elementsIdList[i]
-                local elementType = core.getElementTypeById(id):lower()
+                local elementType = core.getElementDisplayNameById(id):lower()
                 if elementType:lower():find("container") then
                     table.insert(storageIdList, id)
                 end
@@ -302,7 +302,7 @@ MyCoroutines = {
     function()
         local storage_elements = {}
         for elemindex,id in ipairs(storageIdList) do
-            local elementType = core.getElementTypeById(id)
+            local elementType = core.getElementDisplayNameById(id)
             if elementType:lower():find("container") then
                 local elementName = core.getElementNameById(id)
                 if
