@@ -316,7 +316,6 @@ Ingredients = {
     ['advancedorescannerl'] = {['name'] = 'Advanced Ore Scanner L', ['tier'] = 3, ['type'] = 'Functional Part', ['mass'] = 344.5, ['volume'] = 473.9},
     ['rareorescannerl'] = {['name'] = 'Rare Ore Scanner L', ['tier'] = 4, ['type'] = 'Functional Part', ['mass'] = 354.74, ['volume'] = 473.9},
     ['exoticorescannerl'] = {['name'] = 'Exotic Ore Scanner L', ['tier'] = 5, ['type'] = 'Functional Part', ['mass'] = 354.19, ['volume'] = 473.5},
-    ['uncommonorescannerxl'] = {['name'] = 'Uncommon Ore Scanner XL', ['tier'] = 2, ['type'] = 'Functional Part', ['mass'] = 1870, ['volume'] = 2702.9},
     ['basicpowertransformerm'] = {['name'] = 'Basic Power Transformer M', ['tier'] = 1, ['type'] = 'Functional Part', ['mass'] = 1020, ['volume'] = 196.4},
     ['uncommonpowertransformers'] = {['name'] = 'Uncommon Power Transformer S', ['tier'] = 2, ['type'] = 'Functional Part', ['mass'] = 221.56, ['volume'] = 43.33},
     ['uncommonpowertransformerm'] = {['name'] = 'Uncommon Power Transformer M', ['tier'] = 2, ['type'] = 'Functional Part', ['mass'] = 1030, ['volume'] = 202.69},
