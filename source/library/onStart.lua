@@ -1,9 +1,3 @@
---[[
-	All Games Recipes in a table
-	Based on the public script published by D.Mentia on Discord
-	Updated By Glorek and Jericho
-]]
-
 -- clean the name from specific char, etc.
 function cleanName(name)
     if name ~= nil and name:len() > 0 then
