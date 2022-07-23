@@ -19,7 +19,7 @@ To add a container to the system, you must rename it following that pattern: `<p
 For a Hub, you must use that pattern: `<prefix>_<itemId>_<containserSize>_<amountOfContainers>`
 
 - `<prefix>`: the prefix that enable monitoring, by default `MONIT`, see options to customize it
-- `<itemId>`: The ID of the item in the game database, you can use that document to search the ID https://docs.google.com/spreadsheets/d/15KuZ7PxwaLHdMZvgErqv12koOxSlFOxyPDRXKVCXg44/edit?usp=sharing
+- `<itemId>`: The ID of the item in the game database, you can search the ID of item here: https://du-lua.dev/#/items
 - `<containerSize>`: if a hub, the size of the containers linked (default to XS)
 - `<amountOfContainers>`: if a hub, the amount of containers linked
 
