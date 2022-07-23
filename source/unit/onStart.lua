@@ -38,7 +38,7 @@ maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element
 ]]
 
 system.print("-----------------------------------")
-system.print("DU-Storage-Monitoring version 4.0.0")
+system.print("DU-Storage-Monitoring version 4.0.1")
 system.print("-----------------------------------")
 
 options = {}
@@ -132,7 +132,7 @@ setDefaultFillColor(storageDark,Shape_Box,13/255,24/255,28/255,1)
 local colorLayer = createLayer()
 
 function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitle)
-    local r,g,b = getRGBGradient(10/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
+    local r,g,b = getRGBGradient(percent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
 
     local quantity_x_pos = font_size * 6.7
     local percent_x_pos = font_size * 2
@@ -316,16 +316,16 @@ MyCoroutines = {
             if elementType:lower():find("container") then
                 local elementName = core.getElementNameById(id)
                 if
-                    elementName:lower():find(prefixes[1]:lower())
-                    or elementName:lower():find(prefixes[2]:lower())
-                    or elementName:lower():find(prefixes[3]:lower())
-                    or elementName:lower():find(prefixes[4]:lower())
-                    or elementName:lower():find(prefixes[5]:lower())
-                    or elementName:lower():find(prefixes[6]:lower())
-                    or elementName:lower():find(prefixes[7]:lower())
-                    or elementName:lower():find(prefixes[8]:lower())
-                    or elementName:lower():find(prefixes[9]:lower())
-                    then
+                elementName:lower():find(prefixes[1]:lower())
+                        or elementName:lower():find(prefixes[2]:lower())
+                        or elementName:lower():find(prefixes[3]:lower())
+                        or elementName:lower():find(prefixes[4]:lower())
+                        or elementName:lower():find(prefixes[5]:lower())
+                        or elementName:lower():find(prefixes[6]:lower())
+                        or elementName:lower():find(prefixes[7]:lower())
+                        or elementName:lower():find(prefixes[8]:lower())
+                        or elementName:lower():find(prefixes[9]:lower())
+                then
                     local container = {}
                     local splitted = strSplit(elementName, '_')
                     local name = splitted[2]
