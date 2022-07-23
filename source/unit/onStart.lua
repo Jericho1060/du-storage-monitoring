@@ -38,7 +38,7 @@ maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element
 ]]
 
 system.print("-----------------------------------")
-system.print("DU-Storage-Monitoring version 3.2.0")
+system.print("DU-Storage-Monitoring version 4.0.0")
 system.print("-----------------------------------")
 
 options = {}
@@ -132,7 +132,7 @@ setDefaultFillColor(storageDark,Shape_Box,13/255,24/255,28/255,1)
 local colorLayer = createLayer()
 
 function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitle)
-    local r,g,b = getRGBGradient(percent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
+    local r,g,b = getRGBGradient(10/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
 
     local quantity_x_pos = font_size * 6.7
     local percent_x_pos = font_size * 2
@@ -274,6 +274,16 @@ storageIdList= {}
 initIndex = 0
 initFinished = false
 
+-- clean the name from specific char, etc.
+function cleanName(name)
+    if name ~= nil and name:len() > 0 then
+        name = string.gsub(name:lower(), "-", "")
+    else
+        name = "unknown"
+    end
+    return name:gsub("%s+", "")
+end
+
 --Nested Coroutines by Jericho
 coroutinesTable  = {}
 --all functions here will become a coroutine
@@ -319,7 +329,7 @@ MyCoroutines = {
                     local container = {}
                     local splitted = strSplit(elementName, '_')
                     local name = splitted[2]
-                    local ingredient = getIngredient(cleanName(name))
+                    local ingredient = system.getItem(name)
                     local container_size = "XS"
                     local container_amount = 1
                     local container_empty_mass = 0
@@ -330,27 +340,27 @@ MyCoroutines = {
                         local containerMaxHP = core.getElementMaxHitPointsById(id)
                         if containerMaxHP > 68000 then
                             container_size = "XXL"
-                            container_empty_mass = getIngredient("Expanded Container XL").mass
+                            container_empty_mass = 88410
                             container_volume = 512000 * (options.container_proficiency_lvl * 0.1) + 512000
                         elseif containerMaxHP > 33000 then
                             container_size = "XL"
-                            container_empty_mass = getIngredient("Container XL").mass
+                            container_empty_mass = 44210
                             container_volume = 256000 * (options.container_proficiency_lvl * 0.1) + 256000
                         elseif containerMaxHP > 17000 then
                             container_size = "L"
-                            container_empty_mass = getIngredient("Container L").mass
+                            container_empty_mass = 14842.7
                             container_volume = 128000 * (options.container_proficiency_lvl * 0.1) + 128000
                         elseif containerMaxHP > 7900 then
                             container_size = "M"
-                            container_empty_mass = getIngredient("Container M").mass
+                            container_empty_mass = 7421.35
                             container_volume = 64000 * (options.container_proficiency_lvl * 0.1) + 64000
                         elseif containerMaxHP > 900 then
                             container_size = "S"
-                            container_empty_mass = getIngredient("Container S").mass
+                            container_empty_mass = 1281.31
                             container_volume = 8000 * (options.container_proficiency_lvl * 0.1) + 8000
                         else
                             container_size = "XS"
-                            container_empty_mass = getIngredient("Container XS").mass
+                            container_empty_mass = 229.09
                             container_volume = 1000 * (options.container_proficiency_lvl * 0.1) + 1000
                         end
                     else
@@ -372,15 +382,17 @@ MyCoroutines = {
                     local totalMass = core.getElementMassById(id)
                     local contentMassKg = totalMass - container_empty_mass
                     container.id = id
+                    container.itemid = ingredient.id
                     container.realName = elementName
                     container.prefix = splitted[1] .. "_"
                     container.name = name
                     container.ingredient = ingredient
-                    container.quantity = contentMassKg / (ingredient.mass - (ingredient.mass * (options.container_optimization_lvl * 0.05)))
+                    container.quantity = contentMassKg / (ingredient.unitMass - (ingredient.unitMass * (options.container_optimization_lvl * 0.05)))
                     container.volume = container_volume
-                    container.percent = utils.round((ingredient.volume * container.quantity) * 100 / container_volume)
-                    if ingredient.name == "unknown" then
+                    container.percent = utils.round((ingredient.unitVolume * container.quantity) * 100 / container_volume)
+                    if ingredient.name == "InvalidItem" then
                         container.percent = 0
+                        container.quantity = 0
                     end
                     table.insert(storage_elements, container)
                 end
@@ -398,7 +410,7 @@ MyCoroutines = {
                 if groupped[prefix .. cleanName(v.ingredient.name)] then
                     groupped[prefix .. cleanName(v.ingredient.name)].quantity = groupped[prefix .. cleanName(v.ingredient.name)].quantity + v.quantity
                     groupped[prefix .. cleanName(v.ingredient.name)].volume = groupped[prefix .. cleanName(v.ingredient.name)].volume + v.volume
-                    groupped[prefix .. cleanName(v.ingredient.name)].percent = (v.ingredient.volume * groupped[prefix .. cleanName(v.ingredient.name)].quantity) * 100 / groupped[prefix .. cleanName(v.ingredient.name)].volume
+                    groupped[prefix .. cleanName(v.ingredient.name)].percent = (v.ingredient.unitVolume * groupped[prefix .. cleanName(v.ingredient.name)].quantity) * 100 / groupped[prefix .. cleanName(v.ingredient.name)].volume
                 else
                     groupped[prefix .. cleanName(v.ingredient.name)] = v
                 end
@@ -433,8 +445,12 @@ MyCoroutines = {
                 for tier_k,tier in pairs(tiers) do
                     for _,container in pairs(tier) do
                         if container.prefix:lower():find(prefix:lower()) then
+                            local item_name = container.ingredient.locDisplayNameWithSize
+                            if container.ingredient.name == 'InvalidItem' then
+                                item_name = 'Invalid Item Id'
+                            end
                             local storage_data = {
-                                container.ingredient.name,
+                                item_name,
                                 utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals),
                                 utils.round(container.volume),
                                 utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals)

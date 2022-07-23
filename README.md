@@ -9,15 +9,17 @@ You can join me on Guilded for help or suggestions or requests by following that
 
 # Description
 
+### WARNING: Breaking changes from v3.x - that script is now using the item id and not anymore the item name, read the container name pattern doc to know how to find it 
+
 It's displaying on a screen the quantity and the percent fill of containers or hub.
 
 It can support up to 9 screens and chose what is display on each (group feature)
 
-To add a container to the system, you must rename it following that pattern: `<prefix>_<itemName>`
-For a Hub, you must use that pattern: `<prefix>_<itemName>_<containserSize>_<amountOfContainers>`
+To add a container to the system, you must rename it following that pattern: `<prefix>_<itemId>`
+For a Hub, you must use that pattern: `<prefix>_<itemId>_<containserSize>_<amountOfContainers>`
 
 - `<prefix>`: the prefix that enable monitoring, by default `MONIT`, see options to customize it
-- `<itemName>`: the real item name in english. WARNING, this one will be replaced by the item id in a future version, the list with all IDs will be provided
+- `<itemId>`: The ID of the item in the game database, you can use that document to search the ID https://docs.google.com/spreadsheets/d/15KuZ7PxwaLHdMZvgErqv12koOxSlFOxyPDRXKVCXg44/edit?usp=sharing
 - `<containerSize>`: if a hub, the size of the containers linked (default to XS)
 - `<amountOfContainers>`: if a hub, the amount of containers linked
 
