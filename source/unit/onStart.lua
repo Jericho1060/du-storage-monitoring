@@ -37,9 +37,11 @@ maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element
 	INIT
 ]]
 
-system.print("-----------------------------------")
-system.print("DU-Storage-Monitoring version 4.0.1")
-system.print("-----------------------------------")
+local version = '4.0.2'
+
+system.print("----------------------------------")
+system.print("DU-Storage-Monitoring version " .. version)
+system.print("----------------------------------")
 
 options = {}
 options.containerMonitoringPrefix_screen1 = PrefixScreen1
@@ -114,7 +116,7 @@ function renderHeader(title, subtitle)
     addBox(front,0,12,rx,h)
     if subtitle ~= nil and subtitle ~= "" and subtitle ~= "-" then
         addText(front,big,subtitle,44,50)
-        addText(front,smallBold,title,rx-250,40)
+        addText(front,smallBold,title,rx-275,40)
     else
         addText(front,smallBold,title,44,35)
     end
@@ -168,7 +170,7 @@ function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitl
 end
 
 local screen_title = data[1][1]
-renderHeader('STORAGE MONITORING', screen_title)
+renderHeader('STORAGE MONITORING v]] .. version .. [[', screen_title)
 
 start_h = 75
 if screen_title ~= nil and screen_title ~= "" then
@@ -273,16 +275,6 @@ end
 storageIdList= {}
 initIndex = 0
 initFinished = false
-
--- clean the name from specific char, etc.
-function cleanName(name)
-    if name ~= nil and name:len() > 0 then
-        name = string.gsub(name:lower(), "-", "")
-    else
-        name = "unknown"
-    end
-    return name:gsub("%s+", "")
-end
 
 --Nested Coroutines by Jericho
 coroutinesTable  = {}
@@ -407,12 +399,12 @@ MyCoroutines = {
         if groupByItemName then
             for _,v in pairs(storage_elements) do
                 local prefix = v.prefix:lower()
-                if groupped[prefix .. cleanName(v.ingredient.name)] then
-                    groupped[prefix .. cleanName(v.ingredient.name)].quantity = groupped[prefix .. cleanName(v.ingredient.name)].quantity + v.quantity
-                    groupped[prefix .. cleanName(v.ingredient.name)].volume = groupped[prefix .. cleanName(v.ingredient.name)].volume + v.volume
-                    groupped[prefix .. cleanName(v.ingredient.name)].percent = (v.ingredient.unitVolume * groupped[prefix .. cleanName(v.ingredient.name)].quantity) * 100 / groupped[prefix .. cleanName(v.ingredient.name)].volume
+                if groupped[prefix .. v.itemid] then
+                    groupped[prefix .. v.itemid].quantity = groupped[prefix .. v.itemid].quantity + v.quantity
+                    groupped[prefix .. v.itemid].volume = groupped[prefix .. v.itemid].volume + v.volume
+                    groupped[prefix .. v.itemid].percent = (v.ingredient.unitVolume * groupped[prefix .. v.itemid].quantity) * 100 / groupped[prefix .. v.itemid].volume
                 else
-                    groupped[prefix .. cleanName(v.ingredient.name)] = v
+                    groupped[prefix .. v.itemid] = v
                 end
             end
         else
