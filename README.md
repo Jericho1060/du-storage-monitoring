@@ -9,7 +9,7 @@ You can join me on Guilded for help or suggestions or requests by following that
 
 # Description
 
-### WARNING: Breaking changes from v3.x - that script is now using the item id and not anymore the item name, read the container name pattern doc to know how to find it 
+### WARNING: Breaking changes from v3.x - that script is now using the item id and not anymore the item name, read the container name pattern doc to know how to find it if you are looking for the v3.x version, you can still find it here: https://github.com/jericho1060/du-storage-monitoring/tree/v3.x but it won't be updated anymore
 
 It's displaying on a screen the quantity and the percent fill of containers or hub.
 
