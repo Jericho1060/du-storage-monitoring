@@ -37,7 +37,7 @@ maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element
 	INIT
 ]]
 
-local version = '4.0.2'
+local version = '4.0.3'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -369,7 +369,7 @@ MyCoroutines = {
                             volume = container_volume_list[container_size]
                         end
                         container_volume = (volume * options.container_proficiency_lvl * 0.1 + volume) * tonumber(container_amount)
-                        container_empty_mass = getIngredient("Container Hub").mass
+                        container_empty_mass = 55.8
                     end
                     local totalMass = core.getElementMassById(id)
                     local contentMassKg = totalMass - container_empty_mass
