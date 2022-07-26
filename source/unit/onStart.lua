@@ -32,12 +32,20 @@ PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the perce
 fontSize = 15 --export: the size of the text for all the screen
 maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
+--vertical mode code based on a suggestion by Merl
+verticalMode = false --export: rotate the screen 90deg (bottom on right)
+--[[
+ -- BETA OPTIONS
+]]
+ARViewBeta = false --export: BETA - Enable the AR view of Storage
+ARViewBetaDisplayIcon = true --export: BETA - Display the item icon in AR
+ARViewBetaDisplayItemName = true --export: BETA - display the item name in AR View
 
 --[[
 	INIT
 ]]
 
-local version = '4.0.3'
+local version = '4.2.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -70,12 +78,19 @@ options.PercentRoundedDecimals = PercentRoundedDecimals
 options.fontSize = fontSize
 options.maxAmountOfElementsLoadedByTick = maxAmountOfElementsLoadedByTick
 options.maxAmountOfElementsRefreshedByTick = maxAmountOfElementsRefreshedByTick
+options.verticalMode = verticalMode
 
 local renderScript = [[
 local json = require('dkjson')
 local data = json.decode(getInput()) or {}
+local vmode = ]] .. tostring(verticalMode) .. [[
 
-local rx,ry = getResolution()
+local rx,ry
+if vmode then
+	ry,rx = getResolution()
+else
+	rx,ry = getResolution()
+end
 
 local back=createLayer()
 local front=createLayer()
@@ -133,6 +148,19 @@ setDefaultFillColor(storageDark,Shape_Box,13/255,24/255,28/255,1)
 
 local colorLayer = createLayer()
 
+if vmode then
+    local from_top = 10
+    setLayerTranslation(back, ry-from_top,0)
+    setLayerRotation(back, math.rad(90))
+    setLayerTranslation(front, ry-from_top,0)
+    setLayerRotation(front, math.rad(90))
+    setLayerTranslation(storageBar, ry-from_top,0)
+    setLayerRotation(storageBar, math.rad(90))
+    setLayerTranslation(storageDark, ry-from_top,0)
+    setLayerRotation(storageDark, math.rad(90))
+    setLayerTranslation(colorLayer, ry-from_top,0)
+    setLayerRotation(colorLayer, math.rad(90))
+end
 function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitle)
     local r,g,b = getRGBGradient(percent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
 
@@ -183,13 +211,18 @@ for i,container in ipairs(data[2]) do
     renderResistanceBar(container[1], container[2], container[3], container[4], 44, start_h, rx-88, h, i==1)
     start_h = start_h+h+5
 end
-requestAnimationFrame(10)
+requestAnimationFrame(100)
 ]]
 
 --[[
 	split a string on a delimiter By jericho
 ]]
 function strSplit(a,b)result={}for c in(a..b):gmatch("(.-)"..b)do table.insert(result,c)end;return result end
+
+--[[
+    return RGB colors calculated from a gradient between two colors
+]]
+function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local k=0;local l=0;local m=0;if a>=.5 then a=(a-0.5)*2;k=e-a*(e-h)l=f-a*(f-i)m=g-a*(g-j)else a=a*2;k=b-a*(b-e)l=c-a*(c-f)m=d-a*(d-g)end;return k,l,m end
 
 --[[
 	formatting numbers by adding a space between thousands by Jericho
@@ -276,6 +309,18 @@ storageIdList= {}
 initIndex = 0
 initFinished = false
 
+constructPos = construct.getWorldPosition()
+constructRight = construct.getWorldRight()
+constructForward = construct.getWorldForward()
+constructUp = construct.getWorldUp()
+
+--[[
+    Convert a table in local coordinates to a table in world coordinates by Jericho inspired by Koruzarius
+    Source : https://github.com/Jericho1060/DualUniverse/blob/master/Vectors/localToWorldPos.lua
+]]--
+function ConvertLocalToWorld(a,b,c,d,e)local f={a[1]*c[1],a[1]*c[2],a[1]*c[3]}local g={a[2]*d[1],a[2]*d[2],a[2]*d[3]}local h={a[3]*e[1],a[3]*e[2],a[3]*e[3]}return{f[1]+g[1]+h[1]+b[1],f[2]+g[2]+h[2]+b[2],f[3]+g[3]+h[3]+b[3]}end
+
+
 --Nested Coroutines by Jericho
 coroutinesTable  = {}
 --all functions here will become a coroutine
@@ -302,13 +347,13 @@ MyCoroutines = {
         end
     end,
     function()
+        local html = ''
         local storage_elements = {}
         for elemindex,id in ipairs(storageIdList) do
             local elementType = core.getElementDisplayNameById(id)
             if elementType:lower():find("container") then
                 local elementName = core.getElementNameById(id)
-                if
-                elementName:lower():find(prefixes[1]:lower())
+                if elementName:lower():find(prefixes[1]:lower())
                         or elementName:lower():find(prefixes[2]:lower())
                         or elementName:lower():find(prefixes[3]:lower())
                         or elementName:lower():find(prefixes[4]:lower())
@@ -376,6 +421,8 @@ MyCoroutines = {
                     container.id = id
                     container.itemid = ingredient.id
                     container.realName = elementName
+                    local elementPos = core.getElementPositionById(id)
+                    local screenpos = library.getPointOnScreen(ConvertLocalToWorld(elementPos, constructPos, constructRight, constructForward, constructUp))
                     container.prefix = splitted[1] .. "_"
                     container.name = name
                     container.ingredient = ingredient
@@ -386,6 +433,23 @@ MyCoroutines = {
                         container.percent = 0
                         container.quantity = 0
                     end
+                    if container.percent > 100 then container.percent = 100 end
+                    local r,g,b = getRGBGradient(container.percent/100,177,42,42,249,212,123,34,177,76)
+                    local max_distance = 250
+                    local img_width = 3
+                    elemhtml = [[
+                        <div style="text-align:center;position:absolute;left:]] .. utils.round(screenpos[1]*100) .. [[%;top:]] .. utils.round(screenpos[2]*100) .. [[%;color:rgb(]] .. utils.round(r) .. [[,]] .. utils.round(g) .. [[,]] .. utils.round(b) .. [[);margin-left:-500px;width:1000px;"><div style="width:fit-content;padding:5px;margin:auto;border:2px solid black;border-radius:10px;background-color:rgba(100,100,100,.5);">
+                    ]]
+                    if ARViewBetaDisplayIcon then
+                        elemhtml = elemhtml .. [[<img src="../../]] .. container.ingredient.iconPath .. [[" style="width:]] .. utils.round(img_width) .. [[vh;"><br>]]
+                    end
+                    if ARViewBetaDisplayItemName then
+                        elemhtml = elemhtml .. container.ingredient.locDisplayNameWithSize .. [[<br>]]
+                    end
+                    elemhtml = elemhtml .. container.percent .. [[%
+                        </div></div>
+                    ]]
+                    html = html .. elemhtml
                     table.insert(storage_elements, container)
                 end
             end
@@ -461,6 +525,9 @@ MyCoroutines = {
                 screen.setScriptInput(json.encode(data_to_send))
             end
         end
+        if ARViewBeta then
+            system.setScreen(html)
+        end
     end
 }
 
@@ -485,3 +552,5 @@ runCoroutines = function()
 end
 
 MainCoroutine = coroutine.create(runCoroutines)
+
+system.showScreen(true)
