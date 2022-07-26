@@ -84,6 +84,7 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `showRed`: if not enable, line with red gauge will be hidden
 - `maxAmountOfElementsLoadedByTick`: the maximum number of element loaded by tick of the coroutine on script startup (lower that value if you encounter cpu load errors on startup, default to 5000)
 - `maxAmountOfElementsRefreshedByTick`: the maximum number of element refreshed by tick of the coroutine when refreshing values (lower that value if you have cpu load errors after all emlements are loaded, default to 200)
+- `verticalMode`: rotate the screen 90deg (bottom on right), disabled by default
 
 # Support or donation
 
