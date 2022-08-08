@@ -24,7 +24,7 @@ For a Hub, you must use that pattern: `<prefix>_<itemId>_<containserSize>_<amoun
 
 - `<prefix>`: the prefix that enable monitoring, by default `MONIT`, see options to customize it
 - `<itemId>`: The ID of the item in the game database, you can search the ID of item here: https://du-lua.dev/#/items
-- `<containerSize>`: if a hub, the size of the containers linked (default to XS)
+- `<containerSize>`: if a hub, the size of the containers linked (default to XS), valid options are `xs`, `s`, `m`, `l`, `xl`, `xxl`
 - `<amountOfContainers>`: if a hub, the amount of containers linked
 
 By default, the script is grouping all containers or hub that contains the same items on a single line and add the values. See option if you want to disable it.
@@ -84,7 +84,8 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `showRed`: if not enable, line with red gauge will be hidden
 - `maxAmountOfElementsLoadedByTick`: the maximum number of element loaded by tick of the coroutine on script startup (lower that value if you encounter cpu load errors on startup, default to 5000)
 - `maxAmountOfElementsRefreshedByTick`: the maximum number of element refreshed by tick of the coroutine when refreshing values (lower that value if you have cpu load errors after all emlements are loaded, default to 200)
-- `verticalMode`: rotate the screen 90deg (bottom on right), disabled by default
+- `verticalMode`: rotate the screen 90deg (bottom on right), disabled by default 
+- `verticalModeBottomSide`: when vertical mode is enabled, on which side the bottom of the screen is positioned (`left` or `right`)
 
 # Support or donation
 

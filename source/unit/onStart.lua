@@ -34,18 +34,14 @@ maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element l
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
 --vertical mode code based on a suggestion by Merl
 verticalMode = false --export: rotate the screen 90deg (bottom on right)
---[[
- -- BETA OPTIONS
-]]
-ARViewBeta = false --export: BETA - Enable the AR view of Storage
-ARViewBetaDisplayIcon = true --export: BETA - Display the item icon in AR
-ARViewBetaDisplayItemName = true --export: BETA - display the item name in AR View
+verticalModeBottomSide = "right" --export: when vertical mode is enabled, on which side the bottom of the screen is positioned ("left" or "right")
+--defaultSorting = "none" --export: the default sorting of items on the screen: "none": like in the container, "items-asc": ascending sorting on the name, "items-desc": descending sorting on the name, "quantity-asc": ascending on the quantity, "quantity-desc": descending on the quantity
 
 --[[
 	INIT
 ]]
 
-local version = '4.2.0'
+local version = '4.3.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -79,23 +75,60 @@ options.fontSize = fontSize
 options.maxAmountOfElementsLoadedByTick = maxAmountOfElementsLoadedByTick
 options.maxAmountOfElementsRefreshedByTick = maxAmountOfElementsRefreshedByTick
 options.verticalMode = verticalMode
+options.verticalModeBottomSide = verticalModeBottomSide
+options.defaultSorting = defaultSorting
+
+
+local sorting=0
+if defaultSorting=="items-asc" then sorting = 1
+elseif defaultSorting=="items-desc" then sorting = 2
+elseif defaultSorting=="quantity-asc" then sorting = 3
+elseif defaultSorting=="quantity-desc" then sorting = 4
+end
 
 local renderScript = [[
 local json = require('dkjson')
 local data = json.decode(getInput()) or {}
 local vmode = ]] .. tostring(verticalMode) .. [[
 
-local rx,ry
+local vmode_side = "]] .. verticalModeBottomSide .. [["
+
+if items == nil or data[7] then items = {} end
+if page == nil or data[7] then page = 1 end
+if screenTitle == nil or data[7] then page = data[6] or "" end
+if sorting == nil or data[7] then sorting = ]] .. sorting .. [[ end
+
+local images = {}
+
+if data ~= {} then
+    items[#items+1] = {
+        data[1],
+        data[2],
+        data[3],
+        data[4],
+        data[5],
+        data[8]
+    }
+    setOutput(#items)
+    data = nil
+end
+
+local rx,ry = getResolution()
+local cx, cy = getCursor()
 if vmode then
-	ry,rx = getResolution()
-else
-	rx,ry = getResolution()
+    ry,rx = getResolution()
+    cy, cx = getCursor()
+    cx = rx - cx
+    if vmode_side == "right" then
+        cy = ry - cy
+        cx = rx - cx
+    end
 end
 
 local back=createLayer()
 local front=createLayer()
 
-font_size = data[1][2]
+font_size = ]] .. fontSize .. [[
 
 local mini=loadFont('Play',12)
 local small=loadFont('Play',14)
@@ -146,23 +179,41 @@ local storageDark = createLayer()
 setDefaultFillColor(storageDark,Shape_Text,63/255,92/255,102/255,1)
 setDefaultFillColor(storageDark,Shape_Box,13/255,24/255,28/255,1)
 
+local buttonHover = createLayer()
+setDefaultFillColor(buttonHover,Shape_Box,249/255,212/255,123/255,1)
+setDefaultFillColor(buttonHover,Shape_Text,0,0,0,1)
+
 local colorLayer = createLayer()
+local imagesLayer = createLayer()
 
 if vmode then
-    local from_top = 10
-    setLayerTranslation(back, ry-from_top,0)
-    setLayerRotation(back, math.rad(90))
-    setLayerTranslation(front, ry-from_top,0)
-    setLayerRotation(front, math.rad(90))
-    setLayerTranslation(storageBar, ry-from_top,0)
-    setLayerRotation(storageBar, math.rad(90))
-    setLayerTranslation(storageDark, ry-from_top,0)
-    setLayerRotation(storageDark, math.rad(90))
-    setLayerTranslation(colorLayer, ry-from_top,0)
-    setLayerRotation(colorLayer, math.rad(90))
+    local r = 90
+    local tx = ry
+    local ty = 0
+    if vmode_side == "left" then
+        r = r + 180
+        tx = 0
+        ty = rx
+    end
+    setLayerTranslation(back, tx,ty)
+    setLayerRotation(back, math.rad(r))
+    setLayerTranslation(front, tx, ty)
+    setLayerRotation(front, math.rad(r))
+    setLayerTranslation(storageBar, tx, ty)
+    setLayerRotation(storageBar, math.rad(r))
+    setLayerTranslation(colorLayer, tx, ty)
+    setLayerRotation(colorLayer, math.rad(r))
+    setLayerTranslation(imagesLayer, tx, ty)
+    setLayerRotation(imagesLayer, math.rad(r))
+    setLayerTranslation(buttonHover, tx, ty)
+    setLayerRotation(buttonHover, math.rad(r))
+    setLayerTranslation(storageDark, tx, ty)
+    setLayerRotation(storageDark, math.rad(r))
 end
-function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitle)
-    local r,g,b = getRGBGradient(percent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
+function renderResistanceBar(title, quantity, max, percent, item_id, x, y, w, h, withTitle, withIcon)
+    local colorPercent = percent
+    if percent > 100 then colorPercent = 100 end
+    local r,g,b = getRGBGradient(colorPercent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
 
     local quantity_x_pos = font_size * 6.7
     local percent_x_pos = font_size * 2
@@ -172,44 +223,61 @@ function renderResistanceBar(title, quantity, max, percent, x, y, w, h, withTitl
     if withTitle then
         addText(storageBar, small, "ITEMS", x, y-5)
         setNextTextAlign(storageDark, AlignH_Center, AlignV_Bottom)
-        addText(storageDark, small, "MAX VOLUME", x+(w*0.5), y-3)
+        addText(storageDark, small, "MAX VOLUME", x+(w*0.6), y-3)
         setNextTextAlign(storageBar, AlignH_Center, AlignV_Bottom)
-        addText(storageBar, small, "QUANTITY", x+(w*0.75), y-3)
-        addText(storageBar, small, "STORAGE", x+w-60, y-5)
+        addText(storageBar, small, "QUANTITY", x+(w*0.78), y-3)
+        setNextTextAlign(storageBar, AlignH_Right, AlignV_Bottom)
+        addText(storageBar, small, "STORAGE", rx-x, y-5)
     end
 
     local pos_y = y+(h/2)-2
 
+    if item_id and tonumber(item_id) > 0 and images[item_id] and withIcon then
+        addImage(imagesLayer, images[item_id], x+10, y+font_size*.1, font_size*1.3, font_size*1.2)
+    end
+
     setNextTextAlign(storageBar, AlignH_Left, AlignV_Middle)
-    addText(storageBar, itemName, title, x+10, pos_y)
+    addText(storageBar, itemName, title, x+20+font_size, pos_y)
 
     setNextFillColor(colorLayer, r, g, b, 1)
-    addBox(colorLayer,x,y+h-3,w*(percent)/100,3)
+    addBox(colorLayer,x,y+h-3,w*(colorPercent)/100,3)
 
     setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
-    addText(storageDark, itemName, format_number(max) .. ' L', x+(w*0.5), pos_y)
+    addText(storageDark, itemName, format_number(max) .. ' L', x+(w*0.6), pos_y)
 
     setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
-    addText(storageBar, itemName, format_number(quantity), x+(w*0.75), pos_y)
+    addText(storageBar, itemName, format_number(quantity), x+(w*0.78), pos_y)
 
     setNextFillColor(colorLayer, r, g, b, 1)
     setNextTextAlign(colorLayer, AlignH_Right, AlignV_Middle)
-    addText(colorLayer, itemName, format_number(percent) .."%", x+w-10, pos_y)
+    addText(colorLayer, itemName, format_number(percent) .."%", rx-x-5, pos_y)
 end
 
-local screen_title = data[1][1]
-renderHeader('STORAGE MONITORING v]] .. version .. [[', screen_title)
+renderHeader('STORAGE MONITORING v]] .. version .. [[', screenTitle)
 
 start_h = 75
-if screen_title ~= nil and screen_title ~= "" then
+if screenTitle ~= nil and screenTitle ~= "" then
     start_h = 100
 end
 
 
 local h = font_size + font_size / 2
-for i,container in ipairs(data[2]) do
-    renderResistanceBar(container[1], container[2], container[3], container[4], 44, start_h, rx-88, h, i==1)
-    start_h = start_h+h+5
+
+local loadedImages = 0
+if data ~= {} then
+    for _,item in ipairs(items) do
+        if item[1] and images[item[6] ] == nil and loadedImages <= 15 then
+            loadedImages = loadedImages + 1
+            images[item[6] ] = loadImage(item[5])
+        end
+    end
+end
+
+for i,container in ipairs(items) do
+    if container[1] then
+        renderResistanceBar(container[1], container[2], container[3], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
+        start_h = start_h+h+5
+    end
 end
 requestAnimationFrame(100)
 ]]
@@ -308,18 +376,7 @@ end
 storageIdList= {}
 initIndex = 0
 initFinished = false
-
-constructPos = construct.getWorldPosition()
-constructRight = construct.getWorldRight()
-constructForward = construct.getWorldForward()
-constructUp = construct.getWorldUp()
-
---[[
-    Convert a table in local coordinates to a table in world coordinates by Jericho inspired by Koruzarius
-    Source : https://github.com/Jericho1060/DualUniverse/blob/master/Vectors/localToWorldPos.lua
-]]--
-function ConvertLocalToWorld(a,b,c,d,e)local f={a[1]*c[1],a[1]*c[2],a[1]*c[3]}local g={a[2]*d[1],a[2]*d[2],a[2]*d[3]}local h={a[3]*e[1],a[3]*e[2],a[3]*e[3]}return{f[1]+g[1]+h[1]+b[1],f[2]+g[2]+h[2]+b[2],f[3]+g[3]+h[3]+b[3]}end
-
+screens_displayed = false
 
 --Nested Coroutines by Jericho
 coroutinesTable  = {}
@@ -421,8 +478,6 @@ MyCoroutines = {
                     container.id = id
                     container.itemid = ingredient.id
                     container.realName = elementName
-                    local elementPos = core.getElementPositionById(id)
-                    local screenpos = library.getPointOnScreen(ConvertLocalToWorld(elementPos, constructPos, constructRight, constructForward, constructUp))
                     container.prefix = splitted[1] .. "_"
                     container.name = name
                     container.ingredient = ingredient
@@ -434,22 +489,6 @@ MyCoroutines = {
                         container.quantity = 0
                     end
                     if container.percent > 100 then container.percent = 100 end
-                    local r,g,b = getRGBGradient(container.percent/100,177,42,42,249,212,123,34,177,76)
-                    local max_distance = 250
-                    local img_width = 3
-                    elemhtml = [[
-                        <div style="text-align:center;position:absolute;left:]] .. utils.round(screenpos[1]*100) .. [[%;top:]] .. utils.round(screenpos[2]*100) .. [[%;color:rgb(]] .. utils.round(r) .. [[,]] .. utils.round(g) .. [[,]] .. utils.round(b) .. [[);margin-left:-500px;width:1000px;"><div style="width:fit-content;padding:5px;margin:auto;border:2px solid black;border-radius:10px;background-color:rgba(100,100,100,.5);">
-                    ]]
-                    if ARViewBetaDisplayIcon then
-                        elemhtml = elemhtml .. [[<img src="../../]] .. container.ingredient.iconPath .. [[" style="width:]] .. utils.round(img_width) .. [[vh;"><br>]]
-                    end
-                    if ARViewBetaDisplayItemName then
-                        elemhtml = elemhtml .. container.ingredient.locDisplayNameWithSize .. [[<br>]]
-                    end
-                    elemhtml = elemhtml .. container.percent .. [[%
-                        </div></div>
-                    ]]
-                    html = html .. elemhtml
                     table.insert(storage_elements, container)
                 end
             end
@@ -492,12 +531,12 @@ MyCoroutines = {
             table.sort(tiers[k], function(a,b) return a.ingredient.name:lower() < b.ingredient.name:lower() end)
         end
 
-        if #screens > 0 then
+        if #screens > 0 and not screens_displayed then
             for index, screen in pairs(screens) do
-                screen_data = {}
                 local prefix = prefixes[index]
                 local title = titles[index]
-
+                local refreshScreen=true
+                local i = 1
                 for tier_k,tier in pairs(tiers) do
                     for _,container in pairs(tier) do
                         if container.prefix:lower():find(prefix:lower()) then
@@ -509,25 +548,27 @@ MyCoroutines = {
                                 item_name,
                                 utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals),
                                 utils.round(container.volume),
-                                utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals)
+                                utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals),
+                                container.ingredient.iconPath,
+                                titles[index],
+                                refreshScreen,
+                                container.ingredient.id,
+                                screens_displayed
                             }
-                            table.insert(screen_data, storage_data)
+                            screen.setScriptInput(json.encode(storage_data))
+                            refreshScreen = false
+                            while tonumber(screen.getScriptOutput()) ~= i do
+                                coroutine.yield(coroutinesTable[2])
+                            end
+                            i = i+1
                         end
                     end
                 end
-                local data_to_send = {
-                    {
-                        titles[index],
-                        options.fontSize
-                    },
-                    screen_data
-                }
-                screen.setScriptInput(json.encode(data_to_send))
+                screen.setScriptInput(json.encode(nil))
             end
+            screens_displayed = true
         end
-        if ARViewBeta then
-            system.setScreen(html)
-        end
+        unit.exit()
     end
 }
 
