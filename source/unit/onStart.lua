@@ -32,8 +32,9 @@ PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the perce
 fontSize = 15 --export: the size of the text for all the screen
 maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
---vertical mode code based on a suggestion by Merl
-verticalMode = false --export: rotate the screen 90deg (bottom on right)
+maxVolumePosition=50 --export: the position in percent of width for the column Max Volume
+quantityPosition=75 --export: the position in percent of width for the column Quantity
+verticalMode = true --export: rotate the screen 90deg (bottom on right)
 verticalModeBottomSide = "right" --export: when vertical mode is enabled, on which side the bottom of the screen is positioned ("left" or "right")
 --defaultSorting = "none" --export: the default sorting of items on the screen: "none": like in the container, "items-asc": ascending sorting on the name, "items-desc": descending sorting on the name, "quantity-asc": ascending on the quantity, "quantity-desc": descending on the quantity
 
@@ -41,7 +42,7 @@ verticalModeBottomSide = "right" --export: when vertical mode is enabled, on whi
 	INIT
 ]]
 
-local version = '4.3.0'
+local version = '4.3.1'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -74,6 +75,8 @@ options.PercentRoundedDecimals = PercentRoundedDecimals
 options.fontSize = fontSize
 options.maxAmountOfElementsLoadedByTick = maxAmountOfElementsLoadedByTick
 options.maxAmountOfElementsRefreshedByTick = maxAmountOfElementsRefreshedByTick
+options.maxVolumePosition = maxVolumePosition
+options.quantityPosition = quantityPosition
 options.verticalMode = verticalMode
 options.verticalModeBottomSide = verticalModeBottomSide
 options.defaultSorting = defaultSorting
@@ -223,9 +226,9 @@ function renderResistanceBar(title, quantity, max, percent, item_id, x, y, w, h,
     if withTitle then
         addText(storageBar, small, "ITEMS", x, y-5)
         setNextTextAlign(storageDark, AlignH_Center, AlignV_Bottom)
-        addText(storageDark, small, "MAX VOLUME", x+(w*0.6), y-3)
+        addText(storageDark, small, "MAX VOLUME", x+(w*]] .. tostring(maxVolumePosition/100) .. [[), y-3)
         setNextTextAlign(storageBar, AlignH_Center, AlignV_Bottom)
-        addText(storageBar, small, "QUANTITY", x+(w*0.78), y-3)
+        addText(storageBar, small, "QUANTITY", x+(w*]] .. tostring(quantityPosition/100) .. [[), y-3)
         setNextTextAlign(storageBar, AlignH_Right, AlignV_Bottom)
         addText(storageBar, small, "STORAGE", rx-x, y-5)
     end
@@ -243,10 +246,10 @@ function renderResistanceBar(title, quantity, max, percent, item_id, x, y, w, h,
     addBox(colorLayer,x,y+h-3,w*(colorPercent)/100,3)
 
     setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
-    addText(storageDark, itemName, format_number(max) .. ' L', x+(w*0.6), pos_y)
+    addText(storageDark, itemName, format_number(max) .. ' L', x+(w*]] .. tostring(maxVolumePosition/100) .. [[), pos_y)
 
     setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
-    addText(storageBar, itemName, format_number(quantity), x+(w*0.78), pos_y)
+    addText(storageBar, itemName, format_number(quantity), x+(w*]] .. tostring(quantityPosition/100) .. [[), pos_y)
 
     setNextFillColor(colorLayer, r, g, b, 1)
     setNextTextAlign(colorLayer, AlignH_Right, AlignV_Middle)
