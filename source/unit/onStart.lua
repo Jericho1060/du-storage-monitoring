@@ -34,7 +34,7 @@ maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element l
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
 maxVolumePosition=50 --export: the position in percent of width for the column Max Volume
 quantityPosition=75 --export: the position in percent of width for the column Quantity
-verticalMode = true --export: rotate the screen 90deg (bottom on right)
+verticalMode = false --export: rotate the screen 90deg (bottom on right)
 verticalModeBottomSide = "right" --export: when vertical mode is enabled, on which side the bottom of the screen is positioned ("left" or "right")
 --defaultSorting = "none" --export: the default sorting of items on the screen: "none": like in the container, "items-asc": ascending sorting on the name, "items-desc": descending sorting on the name, "quantity-asc": ascending on the quantity, "quantity-desc": descending on the quantity
 
