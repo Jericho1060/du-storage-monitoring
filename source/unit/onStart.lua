@@ -36,13 +36,13 @@ maxVolumePosition= 50 --export: the position in percent of width for the column 
 quantityPosition= 75 --export: the position in percent of width for the column Quantity
 verticalMode = false --export: rotate the screen 90deg (bottom on right)
 verticalModeBottomSide = "right" --export: when vertical mode is enabled, on which side the bottom of the screen is positioned ("left" or "right")
---defaultSorting = "none" --export: the default sorting of items on the screen: "none": like in the container, "items-asc": ascending sorting on the name, "items-desc": descending sorting on the name, "quantity-asc": ascending on the quantity, "quantity-desc": descending on the quantity
+defaultSorting = "none" --export: the default sorting of items on the screen: "none": like in the container, "items-asc": ascending sorting on the name, "items-desc": descending sorting on the name, "quantity-asc": ascending on the quantity, "quantity-desc": descending on the quantity, "percent-asc": ascending on the percent fill, "percent-desc": descending on the percent fill
 
 --[[
 	INIT
 ]]
 
-local version = '4.3.2'
+local version = '4.4.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -87,6 +87,8 @@ if defaultSorting=="items-asc" then sorting = 1
 elseif defaultSorting=="items-desc" then sorting = 2
 elseif defaultSorting=="quantity-asc" then sorting = 3
 elseif defaultSorting=="quantity-desc" then sorting = 4
+elseif defaultSorting=="percent-asc" then sorting = 5
+elseif defaultSorting=="percent-desc" then sorting = 6
 end
 
 local renderScript = [[
@@ -115,8 +117,6 @@ else
     end
     if sorting == nil then sorting = ]] .. sorting .. [[ end
 end
-
-
 
 local images = {}
 
@@ -241,13 +241,87 @@ function renderResistanceBar(title, quantity, max, percent, item_id, x, y, w, h,
     addBox(storageBar,x,y,w,h)
 
     if withTitle then
-        addText(storageBar, small, "ITEMS", x, y-5)
+        local title_item_layer = storageBar
+        local title_item = 'ITEMS'
+        local title_item_width = 50
+        if sorting > 0 and sorting <= 2 then
+            if sorting == 1 then
+                title_item_width = 90
+                title_item = 'ITEMS - ASC'
+            elseif sorting == 2 then
+                title_item_width = 95
+                title_item = 'ITEMS - DESC'
+            end
+            title_item_layer = buttonHover
+        end
+        if cx >= (x-5) and cx <= (x+title_item_width-5) and cy >= (y-19) and cy <= (y-19+h/1.5) then
+            title_item_layer = buttonHover
+            if getCursorPressed() then
+                if sorting == 0 or sorting > 2 then sorting = 1
+                elseif sorting == 1 then sorting = 2
+                elseif sorting == 2 then sorting = 0
+                end
+            end
+        end
+        addBox(title_item_layer, x-5, y-19, title_item_width, h/1.5)
+        setNextTextAlign(title_item_layer, AlignH_Left, AlignV_Bottom)
+        addText(title_item_layer, small, title_item, x, y-5)
+
         setNextTextAlign(storageDark, AlignH_Center, AlignV_Bottom)
-        addText(storageDark, small, "MAX VOLUME", x+(w*]] .. tostring(maxVolumePosition/100) .. [[), y-3)
-        setNextTextAlign(storageBar, AlignH_Center, AlignV_Bottom)
-        addText(storageBar, small, "QUANTITY", x+(w*]] .. tostring(quantityPosition/100) .. [[), y-3)
-        setNextTextAlign(storageBar, AlignH_Right, AlignV_Bottom)
-        addText(storageBar, small, "STORAGE", rx-x, y-5)
+        addText(storageDark, small, "MAX VOLUME", x+(w*]] .. tostring(maxVolumePosition/100) .. [[), y-5)
+
+        local title_quantity_layer = storageBar
+        local title_quantity = 'QUANTITY'
+        local title_quantity_width = 75
+        if sorting >= 3 and sorting <= 4 then
+            if sorting == 3 then
+                title_quantity_width = 105
+                title_quantity = 'QUANTITY - ASC'
+            elseif sorting == 4 then
+                title_quantity_width = 115
+                title_quantity = 'QUANTITY - DESC'
+            end
+            title_quantity_layer = buttonHover
+        end
+        local title_quantity_x = x+(w*]] .. tostring(quantityPosition/100) .. [[)
+        if cx >= (title_quantity_x-title_quantity_width/2) and cx <= (title_quantity_x+title_quantity_width/2) and cy >= (y-19) and cy <= (y-19+h/1.5) then
+            title_quantity_layer = buttonHover
+            if getCursorPressed() then
+                if sorting < 3 or sorting > 4 then sorting = 3
+                elseif sorting == 3 then sorting = 4
+                elseif sorting == 4 then sorting = 0
+                end
+            end
+        end
+        addBox(title_quantity_layer, title_quantity_x-title_quantity_width/2, y-19, title_quantity_width, h/1.5)
+        setNextTextAlign(title_quantity_layer, AlignH_Center, AlignV_Bottom)
+        addText(title_quantity_layer, small, title_quantity, title_quantity_x, y-5)
+
+        local title_percent_layer = storageBar
+        local title_percent = 'STORAGE'
+        local title_percent_width = 75
+        if sorting >= 5 and sorting <= 6 then
+            if sorting == 5 then
+                title_percent_width = 105
+                title_percent = 'STORAGE - ASC'
+            elseif sorting == 6 then
+                title_percent_width = 115
+                title_percent = 'STORAGE - DESC'
+            end
+            title_percent_layer = buttonHover
+        end
+        if cx >= (rx-x+5-title_percent_width) and cx <= (rx-x+5) and cy >= (y-19) and cy <= (y-19+h/1.5) then
+            title_percent_layer = buttonHover
+            if getCursorPressed() then
+                if sorting < 5 then sorting = 5
+                elseif sorting == 5 then sorting = 6
+                elseif sorting == 6 then sorting = 0
+                end
+            end
+        end
+        addBox(title_percent_layer, rx-x+5-title_percent_width, y-19, title_percent_width, h/1.5)
+        setNextTextAlign(title_percent_layer, AlignH_Right, AlignV_Bottom)
+        addText(title_percent_layer, small, title_percent, rx-x, y-5)
     end
 
     local pos_y = y+(h/2)-2
@@ -281,11 +355,24 @@ if screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
 end
 
 
+local sorted_items = {}
+for i,v in pairs(items) do
+    table.insert(sorted_items, v)
+end
+
+if sorting == 1 then table.sort(sorted_items, function(a, b) return a[1] < b[1] end)
+elseif sorting == 2 then table.sort(sorted_items, function(a, b) return a[1] > b[1] end)
+elseif sorting == 3 then table.sort(sorted_items, function(a, b) return a[2] < b[2] end)
+elseif sorting == 4 then table.sort(sorted_items, function(a, b) return a[2] > b[2] end)
+elseif sorting == 5 then table.sort(sorted_items, function(a, b) return a[4] < b[4] end)
+elseif sorting == 6 then table.sort(sorted_items, function(a, b) return a[4] > b[4] end)
+end
+
 local h = font_size + font_size / 2
 
 local loadedImages = 0
 if data ~= {} then
-    for _,item in ipairs(items) do
+    for _,item in ipairs(sorted_items) do
         if item[1] and images[item[6] ] == nil and loadedImages <= 15 then
             loadedImages = loadedImages + 1
             images[item[6] ] = loadImage(item[5])
@@ -293,7 +380,7 @@ if data ~= {} then
     end
 end
 
-for i,container in ipairs(items) do
+for i,container in ipairs(sorted_items) do
     renderResistanceBar(container[1], container[2], container[3], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
     start_h = start_h+h+5
 end
