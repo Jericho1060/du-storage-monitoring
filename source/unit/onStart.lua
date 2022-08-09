@@ -32,8 +32,8 @@ PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the perce
 fontSize = 15 --export: the size of the text for all the screen
 maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
-maxVolumePosition=50 --export: the position in percent of width for the column Max Volume
-quantityPosition=75 --export: the position in percent of width for the column Quantity
+maxVolumePosition= 50 --export: the position in percent of width for the column Max Volume
+quantityPosition= 75 --export: the position in percent of width for the column Quantity
 verticalMode = false --export: rotate the screen 90deg (bottom on right)
 verticalModeBottomSide = "right" --export: when vertical mode is enabled, on which side the bottom of the screen is positioned ("left" or "right")
 --defaultSorting = "none" --export: the default sorting of items on the screen: "none": like in the container, "items-asc": ascending sorting on the name, "items-desc": descending sorting on the name, "quantity-asc": ascending on the quantity, "quantity-desc": descending on the quantity
@@ -42,7 +42,7 @@ verticalModeBottomSide = "right" --export: when vertical mode is enabled, on whi
 	INIT
 ]]
 
-local version = '4.3.1'
+local version = '4.3.2'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -91,19 +91,36 @@ end
 
 local renderScript = [[
 local json = require('dkjson')
-local data = json.decode(getInput()) or {}
+local input = getInput() or json.encode(nil)
+local data = json.decode(input)
 local vmode = ]] .. tostring(verticalMode) .. [[
 
 local vmode_side = "]] .. verticalModeBottomSide .. [["
 
-if items == nil or data[7] then items = {} end
-if page == nil or data[7] then page = 1 end
-if screenTitle == nil or data[7] then page = data[6] or "" end
-if sorting == nil or data[7] then sorting = ]] .. sorting .. [[ end
+
+if data ~= nil and data[7] then
+    items = {}
+    page = 1
+    screenTitle = data[6] or ""
+    sorting = ]] .. sorting .. [[
+
+else
+    if items == nil then items = {} end
+    if page == nil then page = 1 end
+    if screenTitle == nil then
+        screenTitle = "-"
+        if data then
+            screenTitle = data[6] or ""
+        end
+    end
+    if sorting == nil then sorting = ]] .. sorting .. [[ end
+end
+
+
 
 local images = {}
 
-if data ~= {} then
+if data ~= {} and data ~= nil then
     items[#items+1] = {
         data[1],
         data[2],
@@ -259,7 +276,7 @@ end
 renderHeader('STORAGE MONITORING v]] .. version .. [[', screenTitle)
 
 start_h = 75
-if screenTitle ~= nil and screenTitle ~= "" then
+if screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
     start_h = 100
 end
 
@@ -277,10 +294,8 @@ if data ~= {} then
 end
 
 for i,container in ipairs(items) do
-    if container[1] then
-        renderResistanceBar(container[1], container[2], container[3], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
-        start_h = start_h+h+5
-    end
+    renderResistanceBar(container[1], container[2], container[3], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
+    start_h = start_h+h+5
 end
 requestAnimationFrame(100)
 ]]
@@ -553,7 +568,7 @@ MyCoroutines = {
                                 utils.round(container.volume),
                                 utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals),
                                 container.ingredient.iconPath,
-                                titles[index],
+                                title,
                                 refreshScreen,
                                 container.ingredient.id,
                                 screens_displayed
