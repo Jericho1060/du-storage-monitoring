@@ -32,8 +32,12 @@ PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the perce
 fontSize = 15 --export: the size of the text for all the screen
 maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
-maxVolumePosition= 50 --export: the position in percent of width for the column Max Volume
+
+showVolume = true --export: show or hide the column Volume
+volumePosition= 50 --export: the position in percent of width for the column Volume
+showQuantity = true --export: show or hide the column Quantity
 quantityPosition= 75 --export: the position in percent of width for the column Quantity
+
 verticalMode = false --export: rotate the screen 90deg (bottom on right)
 verticalModeBottomSide = "right" --export: when vertical mode is enabled, on which side the bottom of the screen is positioned ("left" or "right")
 defaultSorting = "none" --export: the default sorting of items on the screen: "none": like in the container, "items-asc": ascending sorting on the name, "items-desc": descending sorting on the name, "quantity-asc": ascending on the quantity, "quantity-desc": descending on the quantity, "percent-asc": ascending on the percent fill, "percent-desc": descending on the percent fill
@@ -42,7 +46,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.4.0'
+local version = '4.5.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -75,29 +79,120 @@ options.PercentRoundedDecimals = PercentRoundedDecimals
 options.fontSize = fontSize
 options.maxAmountOfElementsLoadedByTick = maxAmountOfElementsLoadedByTick
 options.maxAmountOfElementsRefreshedByTick = maxAmountOfElementsRefreshedByTick
-options.maxVolumePosition = maxVolumePosition
+options.showVolume = showVolume
+options.volumePosition = volumePosition
+options.showQuantity = showQuantity
 options.quantityPosition = quantityPosition
 options.verticalMode = verticalMode
 options.verticalModeBottomSide = verticalModeBottomSide
 options.defaultSorting = defaultSorting
 
 
+--[[
+	split a string on a delimiter By jericho
+]]
+function strSplit(a,b)result={}for c in(a..b):gmatch("(.-)"..b)do table.insert(result,c)end;return result end
+
+--[[
+    return RGB colors calculated from a gradient between two colors
+]]
+function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local k=0;local l=0;local m=0;if a>=.5 then a=(a-0.5)*2;k=e-a*(e-h)l=f-a*(f-i)m=g-a*(g-j)else a=a*2;k=b-a*(b-e)l=c-a*(c-f)m=d-a*(d-g)end;return k,l,m end
+
+--[[
+	formatting numbers by adding a space between thousands by Jericho
+]]
+function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
+
+core = nil
+databank = nil
+screens = {}
+for slot_name, slot in pairs(unit) do
+    if
+    type(slot) == "table"
+            and type(slot.export) == "table"
+            and slot.getClass
+    then
+        if slot.getClass():lower():find("coreunit") then
+            core = slot
+        end
+        if slot.getClass():lower() == 'screenunit' then
+            slot.slotname = slot_name
+            table.insert(screens,slot)
+        end
+        if slot.getClass():lower() == 'databankunit' then
+            databank = slot
+        end
+    end
+end
+
+if #screens == 0 then
+    system.print("No Screen Detected")
+else
+    --sorting screens by slotname to be sure the display is not changing
+    table.sort(screens, function(a,b) return a.slotname < b.slotname end)
+    local plural = ""
+    if #screens > 1 then plural = "s" end
+    system.print(#screens .. " screen" .. plural .. " Connected")
+end
+if core == nil then
+    system.print("No Core Detected")
+else
+    system.print("Core Connected")
+end
+if databank == nil then
+    system.print("No Databank Detected")
+else
+    system.print("Databank Connected")
+    if (databank.hasKey("options")) and (useDatabankValues == true) then
+        local db_options = json.decode(databank.getStringValue("options"))
+        for key, value in pairs(options) do
+            if db_options[key] then options[key] = db_options[key] end
+        end
+        system.print("Options Loaded From Databank")
+    else
+        system.print("Options Loaded From LUA Parameters")
+    end
+end
+prefixes = {
+    options.containerMonitoringPrefix_screen1,
+    options.containerMonitoringPrefix_screen2,
+    options.containerMonitoringPrefix_screen3,
+    options.containerMonitoringPrefix_screen4,
+    options.containerMonitoringPrefix_screen5,
+    options.containerMonitoringPrefix_screen6,
+    options.containerMonitoringPrefix_screen7,
+    options.containerMonitoringPrefix_screen8,
+    options.containerMonitoringPrefix_screen9
+}
+titles = {
+    options.screenTitle1,
+    options.screenTitle2,
+    options.screenTitle3,
+    options.screenTitle4,
+    options.screenTitle5,
+    options.screenTitle6,
+    options.screenTitle7,
+    options.screenTitle8,
+    options.screenTitle9
+}
+
+
 local sorting=0
-if defaultSorting=="items-asc" then sorting = 1
-elseif defaultSorting=="items-desc" then sorting = 2
-elseif defaultSorting=="quantity-asc" then sorting = 3
-elseif defaultSorting=="quantity-desc" then sorting = 4
-elseif defaultSorting=="percent-asc" then sorting = 5
-elseif defaultSorting=="percent-desc" then sorting = 6
+if options.defaultSorting=="items-asc" then sorting = 1
+elseif options.defaultSorting=="items-desc" then sorting = 2
+elseif options.defaultSorting=="quantity-asc" then sorting = 3
+elseif options.defaultSorting=="quantity-desc" then sorting = 4
+elseif options.defaultSorting=="percent-asc" then sorting = 5
+elseif options.defaultSorting=="percent-desc" then sorting = 6
 end
 
 local renderScript = [[
 local json = require('dkjson')
 local input = getInput() or json.encode(nil)
 local data = json.decode(input)
-local vmode = ]] .. tostring(verticalMode) .. [[
+local vmode = ]] .. tostring(options.verticalMode) .. [[
 
-local vmode_side = "]] .. verticalModeBottomSide .. [["
+local vmode_side = "]] .. options.verticalModeBottomSide .. [["
 
 
 if data ~= nil and data[7] then
@@ -127,7 +222,8 @@ if data ~= {} and data ~= nil then
         data[3],
         data[4],
         data[5],
-        data[8]
+        data[8],
+        data[10]
     }
     setOutput(#items)
     data = nil
@@ -148,7 +244,7 @@ end
 local back=createLayer()
 local front=createLayer()
 
-font_size = ]] .. fontSize .. [[
+font_size = ]] .. options.fontSize .. [[
 
 local mini=loadFont('Play',12)
 local small=loadFont('Play',14)
@@ -230,7 +326,7 @@ if vmode then
     setLayerTranslation(storageDark, tx, ty)
     setLayerRotation(storageDark, math.rad(r))
 end
-function renderResistanceBar(title, quantity, max, percent, item_id, x, y, w, h, withTitle, withIcon)
+function renderResistanceBar(title, quantity, volume, max, percent, item_id, x, y, w, h, withTitle, withIcon)
     local colorPercent = percent
     if percent > 100 then colorPercent = 100 end
     local r,g,b = getRGBGradient(colorPercent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
@@ -267,35 +363,39 @@ function renderResistanceBar(title, quantity, max, percent, item_id, x, y, w, h,
         setNextTextAlign(title_item_layer, AlignH_Left, AlignV_Bottom)
         addText(title_item_layer, small, title_item, x, y-5)
 
-        setNextTextAlign(storageDark, AlignH_Center, AlignV_Bottom)
-        addText(storageDark, small, "MAX VOLUME", x+(w*]] .. tostring(maxVolumePosition/100) .. [[), y-5)
-
-        local title_quantity_layer = storageBar
-        local title_quantity = 'QUANTITY'
-        local title_quantity_width = 75
-        if sorting >= 3 and sorting <= 4 then
-            if sorting == 3 then
-                title_quantity_width = 105
-                title_quantity = 'QUANTITY - ASC'
-            elseif sorting == 4 then
-                title_quantity_width = 115
-                title_quantity = 'QUANTITY - DESC'
-            end
-            title_quantity_layer = buttonHover
+        if ]] .. tostring(options.showVolume) .. [[ then
+            setNextTextAlign(storageDark, AlignH_Center, AlignV_Bottom)
+            addText(storageDark, small, "VOLUME", x+(w*]] .. tostring(options.volumePosition/100) .. [[), y-5)
         end
-        local title_quantity_x = x+(w*]] .. tostring(quantityPosition/100) .. [[)
-        if cx >= (title_quantity_x-title_quantity_width/2) and cx <= (title_quantity_x+title_quantity_width/2) and cy >= (y-19) and cy <= (y-19+h/1.5) then
-            title_quantity_layer = buttonHover
-            if getCursorPressed() then
-                if sorting < 3 or sorting > 4 then sorting = 3
-                elseif sorting == 3 then sorting = 4
-                elseif sorting == 4 then sorting = 0
+
+        if ]] .. tostring(options.showQuantity) .. [[ then
+            local title_quantity_layer = storageBar
+            local title_quantity = 'QUANTITY'
+            local title_quantity_width = 75
+            if sorting >= 3 and sorting <= 4 then
+                if sorting == 3 then
+                    title_quantity_width = 105
+                    title_quantity = 'QUANTITY - ASC'
+                elseif sorting == 4 then
+                    title_quantity_width = 115
+                    title_quantity = 'QUANTITY - DESC'
+                end
+                title_quantity_layer = buttonHover
+            end
+            local title_quantity_x = x+(w*]] .. tostring(options.quantityPosition/100) .. [[)
+            if cx >= (title_quantity_x-title_quantity_width/2) and cx <= (title_quantity_x+title_quantity_width/2) and cy >= (y-19) and cy <= (y-19+h/1.5) then
+                title_quantity_layer = buttonHover
+                if getCursorPressed() then
+                    if sorting < 3 or sorting > 4 then sorting = 3
+                    elseif sorting == 3 then sorting = 4
+                    elseif sorting == 4 then sorting = 0
+                    end
                 end
             end
+            addBox(title_quantity_layer, title_quantity_x-title_quantity_width/2, y-19, title_quantity_width, h/1.5)
+            setNextTextAlign(title_quantity_layer, AlignH_Center, AlignV_Bottom)
+            addText(title_quantity_layer, small, title_quantity, title_quantity_x, y-5)
         end
-        addBox(title_quantity_layer, title_quantity_x-title_quantity_width/2, y-19, title_quantity_width, h/1.5)
-        setNextTextAlign(title_quantity_layer, AlignH_Center, AlignV_Bottom)
-        addText(title_quantity_layer, small, title_quantity, title_quantity_x, y-5)
 
         local title_percent_layer = storageBar
         local title_percent = 'STORAGE'
@@ -336,18 +436,26 @@ function renderResistanceBar(title, quantity, max, percent, item_id, x, y, w, h,
     setNextFillColor(colorLayer, r, g, b, 1)
     addBox(colorLayer,x,y+h-3,w*(colorPercent)/100,3)
 
-    setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
-    addText(storageDark, itemName, format_number(max) .. ' L', x+(w*]] .. tostring(maxVolumePosition/100) .. [[), pos_y)
 
-    setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
-    addText(storageBar, itemName, format_number(quantity), x+(w*]] .. tostring(quantityPosition/100) .. [[), pos_y)
+    if ]] .. tostring(options.showVolume) .. [[ then
+        setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
+        addText(storageDark, itemName, format_number(volume) .. ' L /' .. format_number(max) .. ' L', x+(w*]] .. tostring(options.volumePosition/100) .. [[), pos_y)
+    end
+
+    if ]] .. tostring(options.showQuantity) .. [[ then
+        setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
+        addText(storageBar, itemName, format_number(quantity), x+(w*]] .. tostring(options.quantityPosition/100) .. [[), pos_y)
+    end
 
     setNextFillColor(colorLayer, r, g, b, 1)
     setNextTextAlign(colorLayer, AlignH_Right, AlignV_Middle)
     addText(colorLayer, itemName, format_number(percent) .."%", rx-x-5, pos_y)
 end
-
-renderHeader('STORAGE MONITORING v]] .. version .. [[', screenTitle)
+if ]] .. tostring(options.verticalMode) .. [[ then
+    renderHeader('v]] .. version .. [[', screenTitle)
+else
+    renderHeader('STORAGE MONITORING v]] .. version .. [[', screenTitle)
+end
 
 start_h = 75
 if screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
@@ -381,99 +489,16 @@ if data ~= {} then
 end
 
 for i,container in ipairs(sorted_items) do
-    renderResistanceBar(container[1], container[2], container[3], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
+    renderResistanceBar(container[1], container[2], container[3], container[7], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
     start_h = start_h+h+5
 end
 requestAnimationFrame(100)
 ]]
 
---[[
-	split a string on a delimiter By jericho
-]]
-function strSplit(a,b)result={}for c in(a..b):gmatch("(.-)"..b)do table.insert(result,c)end;return result end
+for _,s in pairs(screens) do
+    s.setRenderScript(renderScript)
+end
 
---[[
-    return RGB colors calculated from a gradient between two colors
-]]
-function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local k=0;local l=0;local m=0;if a>=.5 then a=(a-0.5)*2;k=e-a*(e-h)l=f-a*(f-i)m=g-a*(g-j)else a=a*2;k=b-a*(b-e)l=c-a*(c-f)m=d-a*(d-g)end;return k,l,m end
-
---[[
-	formatting numbers by adding a space between thousands by Jericho
-]]
-function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
-
-core = nil
-databank = nil
-screens = {}
-for slot_name, slot in pairs(unit) do
-    if
-    type(slot) == "table"
-            and type(slot.export) == "table"
-            and slot.getClass
-    then
-        if slot.getClass():lower():find("coreunit") then
-            core = slot
-        end
-        if slot.getClass():lower() == 'screenunit' then
-            slot.slotname = slot_name
-            table.insert(screens,slot)
-            slot.setRenderScript(renderScript)
-        end
-        if slot.getClass():lower() == 'databankunit' then
-            databank = slot
-        end
-    end
-end
-if #screens == 0 then
-    system.print("No Screen Detected")
-else
-    --sorting screens by slotname to be sure the display is not changing
-    table.sort(screens, function(a,b) return a.slotname < b.slotname end)
-    local plural = ""
-    if #screens > 1 then plural = "s" end
-    system.print(#screens .. " screen" .. plural .. " Connected")
-end
-if core == nil then
-    system.print("No Core Detected")
-else
-    system.print("Core Connected")
-end
-if databank == nil then
-    system.print("No Databank Detected")
-else
-    system.print("Databank Connected")
-    if (databank.hasKey("options")) and (useDatabankValues == true) then
-        local db_options = json.decode(databank.getStringValue("options"))
-        for key, value in pairs(options) do
-            if db_options[key] then options[key] = db_options[key] end
-        end
-        system.print("Options Loaded From Databank")
-    else
-        system.print("Options Loaded From LUA Parameters")
-    end
-end
-prefixes = {
-    options.containerMonitoringPrefix_screen1,
-    options.containerMonitoringPrefix_screen2,
-    options.containerMonitoringPrefix_screen3,
-    options.containerMonitoringPrefix_screen4,
-    options.containerMonitoringPrefix_screen5,
-    options.containerMonitoringPrefix_screen6,
-    options.containerMonitoringPrefix_screen7,
-    options.containerMonitoringPrefix_screen8,
-    options.containerMonitoringPrefix_screen9
-}
-titles = {
-    options.screenTitle1,
-    options.screenTitle2,
-    options.screenTitle3,
-    options.screenTitle4,
-    options.screenTitle5,
-    options.screenTitle6,
-    options.screenTitle7,
-    options.screenTitle8,
-    options.screenTitle9
-}
 elementsIdList = {}
 if core ~= nil then
     elementsIdList = core.getElementIdList()
@@ -587,12 +612,13 @@ MyCoroutines = {
                     container.name = name
                     container.ingredient = ingredient
                     container.quantity = contentMassKg / (ingredient.unitMass - (ingredient.unitMass * (options.container_optimization_lvl * 0.05)))
-                    container.volume = container_volume
+                    container.maxvolume = container_volume
                     container.percent = utils.round((ingredient.unitVolume * container.quantity) * 100 / container_volume)
                     if ingredient.name == "InvalidItem" then
                         container.percent = 0
                         container.quantity = 0
                     end
+                    container.volume = container.quantity * ingredient.unitVolume
                     if container.percent > 100 then container.percent = 100 end
                     table.insert(storage_elements, container)
                 end
@@ -610,7 +636,8 @@ MyCoroutines = {
                 if groupped[prefix .. v.itemid] then
                     groupped[prefix .. v.itemid].quantity = groupped[prefix .. v.itemid].quantity + v.quantity
                     groupped[prefix .. v.itemid].volume = groupped[prefix .. v.itemid].volume + v.volume
-                    groupped[prefix .. v.itemid].percent = (v.ingredient.unitVolume * groupped[prefix .. v.itemid].quantity) * 100 / groupped[prefix .. v.itemid].volume
+                    groupped[prefix .. v.itemid].maxvolume = groupped[prefix .. v.itemid].maxvolume + v.maxvolume
+                    groupped[prefix .. v.itemid].percent = groupped[prefix .. v.itemid].volume * 100 / groupped[prefix .. v.itemid].maxvolume
                 else
                     groupped[prefix .. v.itemid] = v
                 end
@@ -658,7 +685,8 @@ MyCoroutines = {
                                 title,
                                 refreshScreen,
                                 container.ingredient.id,
-                                screens_displayed
+                                screens_displayed,
+                                utils.round(container.maxvolume)
                             }
                             screen.setScriptInput(json.encode(storage_data))
                             refreshScreen = false
