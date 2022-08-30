@@ -46,7 +46,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.5.0'
+local version = '4.5.2'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
