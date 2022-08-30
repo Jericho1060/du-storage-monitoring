@@ -280,7 +280,8 @@ function renderHeader(title, subtitle)
     addBox(front,0,12,rx,h)
     if subtitle ~= nil and subtitle ~= "" and subtitle ~= "-" then
         addText(front,big,subtitle,44,50)
-        addText(front,smallBold,title,rx-275,40)
+        setNextTextAlign(front, AlignH_Right, AlignV_Middle)
+        addText(front,smallBold,title,rx-44,40)
     else
         addText(front,smallBold,title,44,35)
     end
@@ -451,11 +452,13 @@ function renderResistanceBar(title, quantity, volume, max, percent, item_id, x, 
     setNextTextAlign(colorLayer, AlignH_Right, AlignV_Middle)
     addText(colorLayer, itemName, format_number(percent) .."%", rx-x-5, pos_y)
 end
-if ]] .. tostring(options.verticalMode) .. [[ then
-    renderHeader('v]] .. version .. [[', screenTitle)
-else
-    renderHeader('STORAGE MONITORING v]] .. version .. [[', screenTitle)
+
+local main_title = 'STORAGE MONITORING v]] .. version .. [['
+
+if ]] .. tostring(options.verticalMode) .. [[ and screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
+    main_title = 'v]] .. version .. [['
 end
+renderHeader(main_title, screenTitle)
 
 start_h = 75
 if screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
