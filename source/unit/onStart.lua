@@ -46,7 +46,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.5.2'
+local version = '4.5.3'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -194,7 +194,6 @@ local vmode = ]] .. tostring(options.verticalMode) .. [[
 
 local vmode_side = "]] .. options.verticalModeBottomSide .. [["
 
-
 if data ~= nil and data[7] then
     items = {}
     page = 1
@@ -216,7 +215,7 @@ end
 local images = {}
 
 if data ~= {} and data ~= nil then
-    items[#items+1] = {
+    items[data[11] ] = {
         data[1],
         data[2],
         data[3],
@@ -537,174 +536,180 @@ MyCoroutines = {
         end
     end,
     function()
-        local html = ''
-        local storage_elements = {}
-        for elemindex,id in ipairs(storageIdList) do
-            local elementType = core.getElementDisplayNameById(id)
-            if elementType:lower():find("container") then
-                local elementName = core.getElementNameById(id)
-                if elementName:lower():find(prefixes[1]:lower())
-                        or elementName:lower():find(prefixes[2]:lower())
-                        or elementName:lower():find(prefixes[3]:lower())
-                        or elementName:lower():find(prefixes[4]:lower())
-                        or elementName:lower():find(prefixes[5]:lower())
-                        or elementName:lower():find(prefixes[6]:lower())
-                        or elementName:lower():find(prefixes[7]:lower())
-                        or elementName:lower():find(prefixes[8]:lower())
-                        or elementName:lower():find(prefixes[9]:lower())
-                then
-                    local container = {}
-                    local splitted = strSplit(elementName, '_')
-                    local name = splitted[2]
-                    local ingredient = system.getItem(name)
-                    local container_size = "XS"
-                    local container_amount = 1
-                    local container_empty_mass = 0
-                    local container_volume = 0
-                    local contentQuantity = 0
-                    local percent_fill = 0
-                    if not elementType:lower():find("hub") then
-                        local containerMaxHP = core.getElementMaxHitPointsById(id)
-                        if containerMaxHP > 68000 then
-                            container_size = "XXL"
-                            container_empty_mass = 88410
-                            container_volume = 512000 * (options.container_proficiency_lvl * 0.1) + 512000
-                        elseif containerMaxHP > 33000 then
-                            container_size = "XL"
-                            container_empty_mass = 44210
-                            container_volume = 256000 * (options.container_proficiency_lvl * 0.1) + 256000
-                        elseif containerMaxHP > 17000 then
-                            container_size = "L"
-                            container_empty_mass = 14842.7
-                            container_volume = 128000 * (options.container_proficiency_lvl * 0.1) + 128000
-                        elseif containerMaxHP > 7900 then
-                            container_size = "M"
-                            container_empty_mass = 7421.35
-                            container_volume = 64000 * (options.container_proficiency_lvl * 0.1) + 64000
-                        elseif containerMaxHP > 900 then
-                            container_size = "S"
-                            container_empty_mass = 1281.31
-                            container_volume = 8000 * (options.container_proficiency_lvl * 0.1) + 8000
+        if not screens_displayed then
+            local html = ''
+            local storage_elements = {}
+            for elemindex,id in ipairs(storageIdList) do
+                local elementType = core.getElementDisplayNameById(id)
+                if elementType:lower():find("container") then
+                    local elementName = core.getElementNameById(id)
+                    if elementName:lower():find(prefixes[1]:lower())
+                            or elementName:lower():find(prefixes[2]:lower())
+                            or elementName:lower():find(prefixes[3]:lower())
+                            or elementName:lower():find(prefixes[4]:lower())
+                            or elementName:lower():find(prefixes[5]:lower())
+                            or elementName:lower():find(prefixes[6]:lower())
+                            or elementName:lower():find(prefixes[7]:lower())
+                            or elementName:lower():find(prefixes[8]:lower())
+                            or elementName:lower():find(prefixes[9]:lower())
+                    then
+                        local container = {}
+                        local splitted = strSplit(elementName, '_')
+                        local name = splitted[2]
+                        local ingredient = system.getItem(name)
+                        local container_size = "XS"
+                        local container_amount = 1
+                        local container_empty_mass = 0
+                        local container_volume = 0
+                        local contentQuantity = 0
+                        local percent_fill = 0
+                        if not elementType:lower():find("hub") then
+                            local containerMaxHP = core.getElementMaxHitPointsById(id)
+                            if containerMaxHP > 68000 then
+                                container_size = "XXL"
+                                container_empty_mass = 88410
+                                container_volume = 512000 * (options.container_proficiency_lvl * 0.1) + 512000
+                            elseif containerMaxHP > 33000 then
+                                container_size = "XL"
+                                container_empty_mass = 44210
+                                container_volume = 256000 * (options.container_proficiency_lvl * 0.1) + 256000
+                            elseif containerMaxHP > 17000 then
+                                container_size = "L"
+                                container_empty_mass = 14842.7
+                                container_volume = 128000 * (options.container_proficiency_lvl * 0.1) + 128000
+                            elseif containerMaxHP > 7900 then
+                                container_size = "M"
+                                container_empty_mass = 7421.35
+                                container_volume = 64000 * (options.container_proficiency_lvl * 0.1) + 64000
+                            elseif containerMaxHP > 900 then
+                                container_size = "S"
+                                container_empty_mass = 1281.31
+                                container_volume = 8000 * (options.container_proficiency_lvl * 0.1) + 8000
+                            else
+                                container_size = "XS"
+                                container_empty_mass = 229.09
+                                container_volume = 1000 * (options.container_proficiency_lvl * 0.1) + 1000
+                            end
                         else
-                            container_size = "XS"
-                            container_empty_mass = 229.09
-                            container_volume = 1000 * (options.container_proficiency_lvl * 0.1) + 1000
+                            if splitted[3] then
+                                container_size = splitted[3]
+                            end
+                            if splitted[4] then
+                                container_amount = splitted[4]
+                            end
+                            local volume = 0
+                            container_volume_list = {xxl=512000, xl=256000, l=128000, m=64000, s=8000, xs=1000}
+                            container_size = container_size:lower()
+                            if container_volume_list[container_size] then
+                                volume = container_volume_list[container_size]
+                            end
+                            container_volume = (volume * options.container_proficiency_lvl * 0.1 + volume) * tonumber(container_amount)
+                            container_empty_mass = 55.8
                         end
+                        local totalMass = core.getElementMassById(id)
+                        local contentMassKg = totalMass - container_empty_mass
+                        container.id = id
+                        container.itemid = ingredient.id
+                        container.realName = elementName
+                        container.prefix = splitted[1] .. "_"
+                        container.name = name
+                        container.ingredient = ingredient
+                        container.quantity = contentMassKg / (ingredient.unitMass - (ingredient.unitMass * (options.container_optimization_lvl * 0.05)))
+                        container.maxvolume = container_volume
+                        container.percent = utils.round((ingredient.unitVolume * container.quantity) * 100 / container_volume)
+                        if ingredient.name == "InvalidItem" then
+                            container.percent = 0
+                            container.quantity = 0
+                        end
+                        container.volume = container.quantity * ingredient.unitVolume
+                        if container.percent > 100 then container.percent = 100 end
+                        table.insert(storage_elements, container)
+                    end
+                end
+                if (elemindex%options.maxAmountOfElementsRefreshedByTick) == 0 then
+                    coroutine.yield(coroutinesTable[2])
+                end
+            end
+
+            -- group by name and screen
+            local groupped = {}
+            if groupByItemName then
+                for _,v in pairs(storage_elements) do
+                    local prefix = v.prefix:lower()
+                    if groupped[prefix .. v.itemid] then
+                        groupped[prefix .. v.itemid].quantity = groupped[prefix .. v.itemid].quantity + v.quantity
+                        groupped[prefix .. v.itemid].volume = groupped[prefix .. v.itemid].volume + v.volume
+                        groupped[prefix .. v.itemid].maxvolume = groupped[prefix .. v.itemid].maxvolume + v.maxvolume
+                        groupped[prefix .. v.itemid].percent = groupped[prefix .. v.itemid].volume * 100 / groupped[prefix .. v.itemid].maxvolume
                     else
-                        if splitted[3] then
-                            container_size = splitted[3]
-                        end
-                        if splitted[4] then
-                            container_amount = splitted[4]
-                        end
-                        local volume = 0
-                        container_volume_list = {xxl=512000, xl=256000, l=128000, m=64000, s=8000, xs=1000}
-                        container_size = container_size:lower()
-                        if container_volume_list[container_size] then
-                            volume = container_volume_list[container_size]
-                        end
-                        container_volume = (volume * options.container_proficiency_lvl * 0.1 + volume) * tonumber(container_amount)
-                        container_empty_mass = 55.8
+                        groupped[prefix .. v.itemid] = v
                     end
-                    local totalMass = core.getElementMassById(id)
-                    local contentMassKg = totalMass - container_empty_mass
-                    container.id = id
-                    container.itemid = ingredient.id
-                    container.realName = elementName
-                    container.prefix = splitted[1] .. "_"
-                    container.name = name
-                    container.ingredient = ingredient
-                    container.quantity = contentMassKg / (ingredient.unitMass - (ingredient.unitMass * (options.container_optimization_lvl * 0.05)))
-                    container.maxvolume = container_volume
-                    container.percent = utils.round((ingredient.unitVolume * container.quantity) * 100 / container_volume)
-                    if ingredient.name == "InvalidItem" then
-                        container.percent = 0
-                        container.quantity = 0
-                    end
-                    container.volume = container.quantity * ingredient.unitVolume
-                    if container.percent > 100 then container.percent = 100 end
-                    table.insert(storage_elements, container)
                 end
+            else
+                groupped = storage_elements
             end
-            if (elemindex%options.maxAmountOfElementsRefreshedByTick) == 0 then
-                coroutine.yield(coroutinesTable[2])
-            end
-        end
 
-        -- group by name and screen
-        local groupped = {}
-        if groupByItemName then
-            for _,v in pairs(storage_elements) do
-                local prefix = v.prefix:lower()
-                if groupped[prefix .. v.itemid] then
-                    groupped[prefix .. v.itemid].quantity = groupped[prefix .. v.itemid].quantity + v.quantity
-                    groupped[prefix .. v.itemid].volume = groupped[prefix .. v.itemid].volume + v.volume
-                    groupped[prefix .. v.itemid].maxvolume = groupped[prefix .. v.itemid].maxvolume + v.maxvolume
-                    groupped[prefix .. v.itemid].percent = groupped[prefix .. v.itemid].volume * 100 / groupped[prefix .. v.itemid].maxvolume
-                else
-                    groupped[prefix .. v.itemid] = v
-                end
+            -- sorting by tier
+            local tiers = {}
+            tiers[1] = {} --tier 0 (thx to Belorion#3127 for pointing Oxygen and Hydrogen are Tier 0 and not 1)
+            tiers[2] = {} --tier 1
+            tiers[3] = {} --tier 2
+            tiers[4] = {} --tier 3
+            tiers[5] = {} --tier 4
+            tiers[6] = {} --tier 5
+            for _,v in pairs(groupped) do
+                table.insert(tiers[v.ingredient.tier+1],v)
             end
+
+            -- sorting by name
+            for k,v in pairs(tiers) do
+                table.sort(tiers[k], function(a,b) return a.ingredient.name:lower() < b.ingredient.name:lower() end)
+            end
+
+            if #screens > 0 and not screens_displayed then
+                for index, screen in pairs(screens) do
+                    local prefix = prefixes[index]
+                    local title = titles[index]
+                    local refreshScreen=true
+                    local i = 1
+                    for tier_k,tier in pairs(tiers) do
+                        for _,container in pairs(tier) do
+                            if container.prefix:lower():find(prefix:lower()) then
+                                local item_name = container.ingredient.locDisplayNameWithSize
+                                if container.ingredient.name == 'InvalidItem' then
+                                    item_name = 'Invalid Item Id'
+                                end
+                                local storage_data = {
+                                    item_name,
+                                    utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals),
+                                    utils.round(container.volume),
+                                    utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals),
+                                    container.ingredient.iconPath,
+                                    title,
+                                    refreshScreen,
+                                    container.ingredient.id,
+                                    screens_displayed,
+                                    utils.round(container.maxvolume),
+                                    i
+                                }
+                                local to_send=json.encode(storage_data)
+                                screen.setScriptInput(to_send)
+                                refreshScreen = false
+                                while tonumber(screen.getScriptOutput()) ~= i do
+                                    coroutine.yield(coroutinesTable[2])
+                                end
+                                i = i+1
+                            end
+                        end
+                    end
+                end
+                screens_displayed = true
+            end
+            unit.exit()
+            coroutine.yield(coroutinesTable[2])
         else
-            groupped = storage_elements
+            coroutine.yield(coroutinesTable[2])
         end
-
-        -- sorting by tier
-        local tiers = {}
-        tiers[1] = {} --tier 0 (thx to Belorion#3127 for pointing Oxygen and Hydrogen are Tier 0 and not 1)
-        tiers[2] = {} --tier 1
-        tiers[3] = {} --tier 2
-        tiers[4] = {} --tier 3
-        tiers[5] = {} --tier 4
-        tiers[6] = {} --tier 5
-        for _,v in pairs(groupped) do
-            table.insert(tiers[v.ingredient.tier+1],v)
-        end
-
-        -- sorting by name
-        for k,v in pairs(tiers) do
-            table.sort(tiers[k], function(a,b) return a.ingredient.name:lower() < b.ingredient.name:lower() end)
-        end
-
-        if #screens > 0 and not screens_displayed then
-            for index, screen in pairs(screens) do
-                local prefix = prefixes[index]
-                local title = titles[index]
-                local refreshScreen=true
-                local i = 1
-                for tier_k,tier in pairs(tiers) do
-                    for _,container in pairs(tier) do
-                        if container.prefix:lower():find(prefix:lower()) then
-                            local item_name = container.ingredient.locDisplayNameWithSize
-                            if container.ingredient.name == 'InvalidItem' then
-                                item_name = 'Invalid Item Id'
-                            end
-                            local storage_data = {
-                                item_name,
-                                utils.round(container.quantity * (10 ^ options.QuantityRoundedDecimals)) / (10 ^ options.QuantityRoundedDecimals),
-                                utils.round(container.volume),
-                                utils.round(container.percent * (10 ^ options.PercentRoundedDecimals)) / (10 ^ options.PercentRoundedDecimals),
-                                container.ingredient.iconPath,
-                                title,
-                                refreshScreen,
-                                container.ingredient.id,
-                                screens_displayed,
-                                utils.round(container.maxvolume)
-                            }
-                            screen.setScriptInput(json.encode(storage_data))
-                            refreshScreen = false
-                            while tonumber(screen.getScriptOutput()) ~= i do
-                                coroutine.yield(coroutinesTable[2])
-                            end
-                            i = i+1
-                        end
-                    end
-                end
-                screen.setScriptInput(json.encode(nil))
-            end
-            screens_displayed = true
-        end
-        unit.exit()
     end
 }
 
