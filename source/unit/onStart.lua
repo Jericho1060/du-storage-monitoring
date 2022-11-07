@@ -46,7 +46,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.5.3'
+local version = '4.6.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -186,316 +186,283 @@ elseif options.defaultSorting=="percent-asc" then sorting = 5
 elseif options.defaultSorting=="percent-desc" then sorting = 6
 end
 
-local renderScript = [[
-local json = require('dkjson')
-local input = getInput() or json.encode(nil)
-local data = json.decode(input)
-local vmode = ]] .. tostring(options.verticalMode) .. [[
+function getRenderScript(data)
+    local rs = [[
+    local vmode = ]] .. tostring(options.verticalMode) .. [[
 
-local vmode_side = "]] .. options.verticalModeBottomSide .. [["
-
-if data ~= nil and data[7] then
-    items = {}
-    page = 1
-    screenTitle = data[6] or ""
-    sorting = ]] .. sorting .. [[
-
-else
-    if items == nil then items = {} end
-    if page == nil then page = 1 end
-    if screenTitle == nil then
-        screenTitle = "-"
-        if data then
-            screenTitle = data[6] or ""
-        end
-    end
+    local vmode_side = "]] .. options.verticalModeBottomSide .. [["
     if sorting == nil then sorting = ]] .. sorting .. [[ end
-end
-
-local images = {}
-
-if data ~= {} and data ~= nil then
-    items[data[11] ] = {
-        data[1],
-        data[2],
-        data[3],
-        data[4],
-        data[5],
-        data[8],
-        data[10]
-    }
-    setOutput(#items)
-    data = nil
-end
-
-local rx,ry = getResolution()
-local cx, cy = getCursor()
-if vmode then
-    ry,rx = getResolution()
-    cy, cx = getCursor()
-    cx = rx - cx
-    if vmode_side == "right" then
-        cy = ry - cy
-        cx = rx - cx
+    ]]
+    if data == nil then
+        rs = rs .. [[local json = require('dkjson')
+        local input = getInput() or json.encode(nil)
+        local data = json.decode(input)
+        if data ~= nil and data[7] then
+            items = {}
+            page = 1
+            screenTitle = data[6] or ""
+        else
+            if items == nil then items = {} end
+            if page == nil then page = 1 end
+            if screenTitle == nil then
+                screenTitle = "-"
+                if data then
+                    screenTitle = data[6] or ""
+                end
+            end
+        end
+        ]]
     end
-end
-
-local back=createLayer()
-local front=createLayer()
-
-font_size = ]] .. options.fontSize .. [[
-
-local mini=loadFont('Play',12)
-local small=loadFont('Play',14)
-local smallBold=loadFont('Play-Bold',18)
-local itemName=loadFont('Play-Bold',font_size)
-local medV=loadFont('Play-Bold', 25)
-local bigV=loadFont('Play-Bold', 30)
-local big=loadFont('Play',38)
-
-setBackgroundColor( 15/255,24/255,29/255)
-
-setDefaultStrokeColor( back,Shape_Line,0,0,0,0.5)
-setDefaultShadow( back,Shape_Line,6,0,0,0,0.5)
-
-setDefaultFillColor( front,Shape_BoxRounded,249/255,212/255,123/255,1)
-setDefaultFillColor( front,Shape_Text,0,0,0,1)
-setDefaultFillColor( front,Shape_Box,0.075,0.125,0.156,1)
-setDefaultFillColor( front,Shape_Text,0.710,0.878,0.941,1)
-
-function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
-
-function round(a,b)if b then return utils.round(a/b)*b end;return a>=0 and math.floor(a+0.5)or math.ceil(a-0.5)end
-
-function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local k=0;local l=0;local m=0;if a>=.5 then a=(a-0.5)*2;k=e-a*(e-h)l=f-a*(f-i)m=g-a*(g-j)else a=a*2;k=b-a*(b-e)l=c-a*(c-f)m=d-a*(d-g)end;return k,l,m end
-
-function renderHeader(title, subtitle)
-    local h_factor = 12
-    local h = 35
-    if subtitle ~= nil and subtitle ~= "" and subtitle ~= "-" then
-        h = 50
-    end
-    addLine( back,0,h+12,rx,h+12)
-    addBox(front,0,12,rx,h)
-    if subtitle ~= nil and subtitle ~= "" and subtitle ~= "-" then
-        addText(front,big,subtitle,44,50)
-        setNextTextAlign(front, AlignH_Right, AlignV_Middle)
-        addText(front,smallBold,title,rx-44,40)
+    rs = rs .. [[local images = {}
+    ]]
+    if data == nil then
+        rs = rs .. [[if data ~= {} and data ~= nil then
+            items[data[11] ] = {data[1],data[2],data[3],data[4],data[5],data[8],data[10]}
+            setOutput(#items)
+            data = nil
+        end
+        ]]
     else
-        addText(front,smallBold,title,44,35)
+        rs = rs .. 'items=' .. data .. [[
+
+        ]]
     end
-end
-
-local storageBar = createLayer()
-setDefaultFillColor(storageBar,Shape_Text,110/255,166/255,181/255,1)
-setDefaultFillColor(storageBar,Shape_Box,0.075,0.125,0.156,1)
-setDefaultFillColor(storageBar,Shape_Line,1,1,1,1)
-
-local storageDark = createLayer()
-setDefaultFillColor(storageDark,Shape_Text,63/255,92/255,102/255,1)
-setDefaultFillColor(storageDark,Shape_Box,13/255,24/255,28/255,1)
-
-local buttonHover = createLayer()
-setDefaultFillColor(buttonHover,Shape_Box,249/255,212/255,123/255,1)
-setDefaultFillColor(buttonHover,Shape_Text,0,0,0,1)
-
-local colorLayer = createLayer()
-local imagesLayer = createLayer()
-
-if vmode then
-    local r = 90
-    local tx = ry
-    local ty = 0
-    if vmode_side == "left" then
-        r = r + 180
-        tx = 0
-        ty = rx
-    end
-    setLayerTranslation(back, tx,ty)
-    setLayerRotation(back, math.rad(r))
-    setLayerTranslation(front, tx, ty)
-    setLayerRotation(front, math.rad(r))
-    setLayerTranslation(storageBar, tx, ty)
-    setLayerRotation(storageBar, math.rad(r))
-    setLayerTranslation(colorLayer, tx, ty)
-    setLayerRotation(colorLayer, math.rad(r))
-    setLayerTranslation(imagesLayer, tx, ty)
-    setLayerRotation(imagesLayer, math.rad(r))
-    setLayerTranslation(buttonHover, tx, ty)
-    setLayerRotation(buttonHover, math.rad(r))
-    setLayerTranslation(storageDark, tx, ty)
-    setLayerRotation(storageDark, math.rad(r))
-end
-function renderResistanceBar(title, quantity, volume, max, percent, item_id, x, y, w, h, withTitle, withIcon)
-    local colorPercent = percent
-    if percent > 100 then colorPercent = 100 end
-    local r,g,b = getRGBGradient(colorPercent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
-
-    local quantity_x_pos = font_size * 6.7
-    local percent_x_pos = font_size * 2
-
-    addBox(storageBar,x,y,w,h)
-
-    if withTitle then
-        local title_item_layer = storageBar
-        local title_item = 'ITEMS'
-        local title_item_width = 50
-        if sorting > 0 and sorting <= 2 then
-            if sorting == 1 then
-                title_item_width = 90
-                title_item = 'ITEMS - ASC'
-            elseif sorting == 2 then
-                title_item_width = 95
-                title_item = 'ITEMS - DESC'
+    rs = rs .. [[local rx,ry = getResolution()
+        local cx, cy = getCursor()
+        if vmode then
+            ry,rx = getResolution()
+            cy, cx = getCursor()
+            cx = rx - cx
+            if vmode_side == "right" then
+                cy = ry - cy
+                cx = rx - cx
             end
-            title_item_layer = buttonHover
         end
-        if cx >= (x-5) and cx <= (x+title_item_width-5) and cy >= (y-19) and cy <= (y-19+h/1.5) then
-            title_item_layer = buttonHover
-            if getCursorPressed() then
-                if sorting == 0 or sorting > 2 then sorting = 1
-                elseif sorting == 1 then sorting = 2
-                elseif sorting == 2 then sorting = 0
+        local back=createLayer()
+        local front=createLayer()
+        font_size = ]] .. options.fontSize .. [[
+
+        local mini=loadFont('Play',12)
+        local small=loadFont('Play',14)
+        local smallBold=loadFont('Play-Bold',18)
+        local itemName=loadFont('Play-Bold',font_size)
+        local medV=loadFont('Play-Bold', 25)
+        local bigV=loadFont('Play-Bold', 30)
+        local big=loadFont('Play',38)
+        setBackgroundColor( 15/255,24/255,29/255)
+        setDefaultStrokeColor( back,Shape_Line,0,0,0,0.5)
+        setDefaultShadow( back,Shape_Line,6,0,0,0,0.5)
+        setDefaultFillColor( front,Shape_BoxRounded,249/255,212/255,123/255,1)
+        setDefaultFillColor( front,Shape_Text,0,0,0,1)
+        setDefaultFillColor( front,Shape_Box,0.075,0.125,0.156,1)
+        setDefaultFillColor( front,Shape_Text,0.710,0.878,0.941,1)
+        function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
+        function round(a,b)if b then return utils.round(a/b)*b end;return a>=0 and math.floor(a+0.5)or math.ceil(a-0.5)end
+        function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local k=0;local l=0;local m=0;if a>=.5 then a=(a-0.5)*2;k=e-a*(e-h)l=f-a*(f-i)m=g-a*(g-j)else a=a*2;k=b-a*(b-e)l=c-a*(c-f)m=d-a*(d-g)end;return k,l,m end
+        function renderHeader(title, subtitle)
+            local h_factor = 12
+            local h = 35
+            if subtitle ~= nil and subtitle ~= "" and subtitle ~= "-" then
+                h = 50
+            end
+            addLine( back,0,h+12,rx,h+12)
+            addBox(front,0,12,rx,h)
+            if subtitle ~= nil and subtitle ~= "" and subtitle ~= "-" then
+                addText(front,big,subtitle,44,50)
+                setNextTextAlign(front, AlignH_Right, AlignV_Middle)
+                addText(front,smallBold,title,rx-44,40)
+            else
+                addText(front,smallBold,title,44,35)
+            end
+        end
+        local storageBar = createLayer()
+        setDefaultFillColor(storageBar,Shape_Text,110/255,166/255,181/255,1)
+        setDefaultFillColor(storageBar,Shape_Box,0.075,0.125,0.156,1)
+        setDefaultFillColor(storageBar,Shape_Line,1,1,1,1)
+        local storageDark = createLayer()
+        setDefaultFillColor(storageDark,Shape_Text,63/255,92/255,102/255,1)
+        setDefaultFillColor(storageDark,Shape_Box,13/255,24/255,28/255,1)
+        local buttonHover = createLayer()
+        setDefaultFillColor(buttonHover,Shape_Box,249/255,212/255,123/255,1)
+        setDefaultFillColor(buttonHover,Shape_Text,0,0,0,1)
+        local colorLayer = createLayer()
+        local imagesLayer = createLayer()
+        if vmode then
+            local r = 90
+            local tx = ry
+            local ty = 0
+            if vmode_side == "left" then
+                r = r + 180
+                tx = 0
+                ty = rx
+            end
+            setLayerTranslation(back, tx,ty)
+            setLayerRotation(back, math.rad(r))
+            setLayerTranslation(front, tx, ty)
+            setLayerRotation(front, math.rad(r))
+            setLayerTranslation(storageBar, tx, ty)
+            setLayerRotation(storageBar, math.rad(r))
+            setLayerTranslation(colorLayer, tx, ty)
+            setLayerRotation(colorLayer, math.rad(r))
+            setLayerTranslation(imagesLayer, tx, ty)
+            setLayerRotation(imagesLayer, math.rad(r))
+            setLayerTranslation(buttonHover, tx, ty)
+            setLayerRotation(buttonHover, math.rad(r))
+            setLayerTranslation(storageDark, tx, ty)
+            setLayerRotation(storageDark, math.rad(r))
+        end
+        function renderResistanceBar(title, quantity, volume, max, percent, item_id, x, y, w, h, withTitle, withIcon)
+            local colorPercent = percent
+            if percent > 100 then colorPercent = 100 end
+            local r,g,b = getRGBGradient(colorPercent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
+            local quantity_x_pos = font_size * 6.7
+            local percent_x_pos = font_size * 2
+            addBox(storageBar,x,y,w,h)
+            if withTitle then
+                local title_item_layer = storageBar
+                local title_item = 'ITEMS'
+                local title_item_width = 50
+                if sorting > 0 and sorting <= 2 then
+                    if sorting == 1 then
+                        title_item_width = 90
+                        title_item = 'ITEMS - ASC'
+                    elseif sorting == 2 then
+                        title_item_width = 95
+                        title_item = 'ITEMS - DESC'
+                    end
+                    title_item_layer = buttonHover
                 end
-            end
-        end
-        addBox(title_item_layer, x-5, y-19, title_item_width, h/1.5)
-        setNextTextAlign(title_item_layer, AlignH_Left, AlignV_Bottom)
-        addText(title_item_layer, small, title_item, x, y-5)
-
-        if ]] .. tostring(options.showVolume) .. [[ then
-            setNextTextAlign(storageDark, AlignH_Center, AlignV_Bottom)
-            addText(storageDark, small, "VOLUME", x+(w*]] .. tostring(options.volumePosition/100) .. [[), y-5)
-        end
-
-        if ]] .. tostring(options.showQuantity) .. [[ then
-            local title_quantity_layer = storageBar
-            local title_quantity = 'QUANTITY'
-            local title_quantity_width = 75
-            if sorting >= 3 and sorting <= 4 then
-                if sorting == 3 then
-                    title_quantity_width = 105
-                    title_quantity = 'QUANTITY - ASC'
-                elseif sorting == 4 then
-                    title_quantity_width = 115
-                    title_quantity = 'QUANTITY - DESC'
-                end
-                title_quantity_layer = buttonHover
-            end
-            local title_quantity_x = x+(w*]] .. tostring(options.quantityPosition/100) .. [[)
-            if cx >= (title_quantity_x-title_quantity_width/2) and cx <= (title_quantity_x+title_quantity_width/2) and cy >= (y-19) and cy <= (y-19+h/1.5) then
-                title_quantity_layer = buttonHover
-                if getCursorPressed() then
-                    if sorting < 3 or sorting > 4 then sorting = 3
-                    elseif sorting == 3 then sorting = 4
-                    elseif sorting == 4 then sorting = 0
+                if cx >= (x-5) and cx <= (x+title_item_width-5) and cy >= (y-19) and cy <= (y-19+h/1.5) then
+                    title_item_layer = buttonHover
+                    if getCursorPressed() then
+                        if sorting == 0 or sorting > 2 then sorting = 1
+                        elseif sorting == 1 then sorting = 2
+                        elseif sorting == 2 then sorting = 0
+                        end
                     end
                 end
+                addBox(title_item_layer, x-5, y-19, title_item_width, h/1.5)
+                setNextTextAlign(title_item_layer, AlignH_Left, AlignV_Bottom)
+                addText(title_item_layer, small, title_item, x, y-5)
+                if ]] .. tostring(options.showVolume) .. [[ then
+                    setNextTextAlign(storageDark, AlignH_Center, AlignV_Bottom)
+                    addText(storageDark, small, "VOLUME", x+(w*]] .. tostring(options.volumePosition/100) .. [[), y-5)
+                end
+                if ]] .. tostring(options.showQuantity) .. [[ then
+                    local title_quantity_layer = storageBar
+                    local title_quantity = 'QUANTITY'
+                    local title_quantity_width = 75
+                    if sorting >= 3 and sorting <= 4 then
+                        if sorting == 3 then
+                            title_quantity_width = 105
+                            title_quantity = 'QUANTITY - ASC'
+                        elseif sorting == 4 then
+                            title_quantity_width = 115
+                            title_quantity = 'QUANTITY - DESC'
+                        end
+                        title_quantity_layer = buttonHover
+                    end
+                    local title_quantity_x = x+(w*]] .. tostring(options.quantityPosition/100) .. [[)
+                    if cx >= (title_quantity_x-title_quantity_width/2) and cx <= (title_quantity_x+title_quantity_width/2) and cy >= (y-19) and cy <= (y-19+h/1.5) then
+                        title_quantity_layer = buttonHover
+                        if getCursorPressed() then
+                            if sorting < 3 or sorting > 4 then sorting = 3
+                            elseif sorting == 3 then sorting = 4
+                            elseif sorting == 4 then sorting = 0
+                            end
+                        end
+                    end
+                    addBox(title_quantity_layer, title_quantity_x-title_quantity_width/2, y-19, title_quantity_width, h/1.5)
+                    setNextTextAlign(title_quantity_layer, AlignH_Center, AlignV_Bottom)
+                    addText(title_quantity_layer, small, title_quantity, title_quantity_x, y-5)
+                end
+                local title_percent_layer = storageBar
+                local title_percent = 'STORAGE'
+                local title_percent_width = 75
+                if sorting >= 5 and sorting <= 6 then
+                    if sorting == 5 then
+                        title_percent_width = 105
+                        title_percent = 'STORAGE - ASC'
+                    elseif sorting == 6 then
+                        title_percent_width = 115
+                        title_percent = 'STORAGE - DESC'
+                    end
+                    title_percent_layer = buttonHover
+                end
+                if cx >= (rx-x+5-title_percent_width) and cx <= (rx-x+5) and cy >= (y-19) and cy <= (y-19+h/1.5) then
+                    title_percent_layer = buttonHover
+                    if getCursorPressed() then
+                        if sorting < 5 then sorting = 5
+                        elseif sorting == 5 then sorting = 6
+                        elseif sorting == 6 then sorting = 0
+                        end
+                    end
+                end
+                addBox(title_percent_layer, rx-x+5-title_percent_width, y-19, title_percent_width, h/1.5)
+                setNextTextAlign(title_percent_layer, AlignH_Right, AlignV_Bottom)
+                addText(title_percent_layer, small, title_percent, rx-x, y-5)
             end
-            addBox(title_quantity_layer, title_quantity_x-title_quantity_width/2, y-19, title_quantity_width, h/1.5)
-            setNextTextAlign(title_quantity_layer, AlignH_Center, AlignV_Bottom)
-            addText(title_quantity_layer, small, title_quantity, title_quantity_x, y-5)
+            local pos_y = y+(h/2)-2
+            if item_id and tonumber(item_id) > 0 and images[item_id] and withIcon then
+                addImage(imagesLayer, images[item_id], x+10, y+font_size*.1, font_size*1.3, font_size*1.2)
+            end
+            setNextTextAlign(storageBar, AlignH_Left, AlignV_Middle)
+            addText(storageBar, itemName, title, x+20+font_size, pos_y)
+            setNextFillColor(colorLayer, r, g, b, 1)
+            addBox(colorLayer,x,y+h-3,w*(colorPercent)/100,3)
+            if ]] .. tostring(options.showVolume) .. [[ then
+                setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
+                addText(storageDark, itemName, format_number(volume) .. ' L /' .. format_number(max) .. ' L', x+(w*]] .. tostring(options.volumePosition/100) .. [[), pos_y)
+            end
+            if ]] .. tostring(options.showQuantity) .. [[ then
+                setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
+                addText(storageBar, itemName, format_number(quantity), x+(w*]] .. tostring(options.quantityPosition/100) .. [[), pos_y)
+            end
+            setNextFillColor(colorLayer, r, g, b, 1)
+            setNextTextAlign(colorLayer, AlignH_Right, AlignV_Middle)
+            addText(colorLayer, itemName, format_number(percent) .."%", rx-x-5, pos_y)
         end
+        local main_title = 'STORAGE MONITORING v]] .. version .. [['
+        if ]] .. tostring(options.verticalMode) .. [[ and screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
+            main_title = 'v]] .. version .. [['
+        end
+        renderHeader(main_title, screenTitle)
 
-        local title_percent_layer = storageBar
-        local title_percent = 'STORAGE'
-        local title_percent_width = 75
-        if sorting >= 5 and sorting <= 6 then
-            if sorting == 5 then
-                title_percent_width = 105
-                title_percent = 'STORAGE - ASC'
-            elseif sorting == 6 then
-                title_percent_width = 115
-                title_percent = 'STORAGE - DESC'
-            end
-            title_percent_layer = buttonHover
+        start_h = 75
+        if screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
+            start_h = 100
         end
-        if cx >= (rx-x+5-title_percent_width) and cx <= (rx-x+5) and cy >= (y-19) and cy <= (y-19+h/1.5) then
-            title_percent_layer = buttonHover
-            if getCursorPressed() then
-                if sorting < 5 then sorting = 5
-                elseif sorting == 5 then sorting = 6
-                elseif sorting == 6 then sorting = 0
+        local sorted_items = {}
+        for i,v in pairs(items) do
+            table.insert(sorted_items, v)
+        end
+        if sorting == 1 then table.sort(sorted_items, function(a, b) return a[1] < b[1] end)
+        elseif sorting == 2 then table.sort(sorted_items, function(a, b) return a[1] > b[1] end)
+        elseif sorting == 3 then table.sort(sorted_items, function(a, b) return a[2] < b[2] end)
+        elseif sorting == 4 then table.sort(sorted_items, function(a, b) return a[2] > b[2] end)
+        elseif sorting == 5 then table.sort(sorted_items, function(a, b) return a[4] < b[4] end)
+        elseif sorting == 6 then table.sort(sorted_items, function(a, b) return a[4] > b[4] end)
+        end
+        local h = font_size + font_size / 2
+        local loadedImages = 0
+        if data ~= {} then
+            for _,item in ipairs(sorted_items) do
+                if item[1] and images[item[6] ] == nil and loadedImages <= 15 then
+                    loadedImages = loadedImages + 1
+                    images[item[6] ] = loadImage(item[5])
                 end
             end
         end
-        addBox(title_percent_layer, rx-x+5-title_percent_width, y-19, title_percent_width, h/1.5)
-        setNextTextAlign(title_percent_layer, AlignH_Right, AlignV_Bottom)
-        addText(title_percent_layer, small, title_percent, rx-x, y-5)
-    end
-
-    local pos_y = y+(h/2)-2
-
-    if item_id and tonumber(item_id) > 0 and images[item_id] and withIcon then
-        addImage(imagesLayer, images[item_id], x+10, y+font_size*.1, font_size*1.3, font_size*1.2)
-    end
-
-    setNextTextAlign(storageBar, AlignH_Left, AlignV_Middle)
-    addText(storageBar, itemName, title, x+20+font_size, pos_y)
-
-    setNextFillColor(colorLayer, r, g, b, 1)
-    addBox(colorLayer,x,y+h-3,w*(colorPercent)/100,3)
-
-
-    if ]] .. tostring(options.showVolume) .. [[ then
-        setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
-        addText(storageDark, itemName, format_number(volume) .. ' L /' .. format_number(max) .. ' L', x+(w*]] .. tostring(options.volumePosition/100) .. [[), pos_y)
-    end
-
-    if ]] .. tostring(options.showQuantity) .. [[ then
-        setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
-        addText(storageBar, itemName, format_number(quantity), x+(w*]] .. tostring(options.quantityPosition/100) .. [[), pos_y)
-    end
-
-    setNextFillColor(colorLayer, r, g, b, 1)
-    setNextTextAlign(colorLayer, AlignH_Right, AlignV_Middle)
-    addText(colorLayer, itemName, format_number(percent) .."%", rx-x-5, pos_y)
-end
-
-local main_title = 'STORAGE MONITORING v]] .. version .. [['
-
-if ]] .. tostring(options.verticalMode) .. [[ and screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
-    main_title = 'v]] .. version .. [['
-end
-renderHeader(main_title, screenTitle)
-
-start_h = 75
-if screenTitle ~= nil and screenTitle ~= "" and screenTitle ~= "-" then
-    start_h = 100
-end
-
-
-local sorted_items = {}
-for i,v in pairs(items) do
-    table.insert(sorted_items, v)
-end
-
-if sorting == 1 then table.sort(sorted_items, function(a, b) return a[1] < b[1] end)
-elseif sorting == 2 then table.sort(sorted_items, function(a, b) return a[1] > b[1] end)
-elseif sorting == 3 then table.sort(sorted_items, function(a, b) return a[2] < b[2] end)
-elseif sorting == 4 then table.sort(sorted_items, function(a, b) return a[2] > b[2] end)
-elseif sorting == 5 then table.sort(sorted_items, function(a, b) return a[4] < b[4] end)
-elseif sorting == 6 then table.sort(sorted_items, function(a, b) return a[4] > b[4] end)
-end
-
-local h = font_size + font_size / 2
-
-local loadedImages = 0
-if data ~= {} then
-    for _,item in ipairs(sorted_items) do
-        if item[1] and images[item[6] ] == nil and loadedImages <= 15 then
-            loadedImages = loadedImages + 1
-            images[item[6] ] = loadImage(item[5])
+        for i,container in ipairs(sorted_items) do
+            renderResistanceBar(container[1], container[2], container[3], container[7], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
+            start_h = start_h+h+5
         end
-    end
+        requestAnimationFrame(100)
+    ]]
+    return rs
 end
 
-for i,container in ipairs(sorted_items) do
-    renderResistanceBar(container[1], container[2], container[3], container[7], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
-    start_h = start_h+h+5
-end
-requestAnimationFrame(100)
-]]
+local renderScript = getRenderScript()
 
 for _,s in pairs(screens) do
     s.setRenderScript(renderScript)
@@ -672,6 +639,7 @@ MyCoroutines = {
                     local title = titles[index]
                     local refreshScreen=true
                     local i = 1
+                    local items_data_for_screen = {}
                     for tier_k,tier in pairs(tiers) do
                         for _,container in pairs(tier) do
                             if container.prefix:lower():find(prefix:lower()) then
@@ -692,6 +660,7 @@ MyCoroutines = {
                                     utils.round(container.maxvolume),
                                     i
                                 }
+                                table.insert(items_data_for_screen,storage_data)
                                 local to_send=json.encode(storage_data)
                                 screen.setScriptInput(to_send)
                                 refreshScreen = false
@@ -701,6 +670,16 @@ MyCoroutines = {
                                 i = i+1
                             end
                         end
+                    end
+                    local str_data = '{'
+                    for i,v in ipairs(items_data_for_screen) do
+                        str_data = str_data .. '{"' .. tostring(v[1]) .. '",' .. tostring(v[2]) .. ',' .. tostring(v[3]) .. ',' .. tostring(v[4]) .. ',"' .. tostring(v[5]) .. '",' .. tostring(v[8]) .. ',' .. tostring(v[10]) .. '}'
+                        if i < #items_data_for_screen then str_data = str_data .. ',' end
+                    end
+                    str_data = str_data .. '}'
+                    local fullRS = getRenderScript(str_data)
+                    if fullRS:len() < 50000 then --if all can stay on screen then
+                        screen.setRenderScript(fullRS)
                     end
                 end
                 screens_displayed = true
