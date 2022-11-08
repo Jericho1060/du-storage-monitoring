@@ -46,7 +46,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.6.0'
+local version = '4.6.1'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -186,7 +186,7 @@ elseif options.defaultSorting=="percent-asc" then sorting = 5
 elseif options.defaultSorting=="percent-desc" then sorting = 6
 end
 
-function getRenderScript(data)
+function getRenderScript(data, screenTitle)
     local rs = [[
     local vmode = ]] .. tostring(options.verticalMode) .. [[
 
@@ -226,6 +226,10 @@ function getRenderScript(data)
         rs = rs .. 'items=' .. data .. [[
 
         ]]
+        if screenTitle ~= nil then
+            rs = rs .. "screenTitle='" .. screenTitle .. [['
+            ]]
+        end
     end
     rs = rs .. [[local rx,ry = getResolution()
         local cx, cy = getCursor()
@@ -677,7 +681,7 @@ MyCoroutines = {
                         if i < #items_data_for_screen then str_data = str_data .. ',' end
                     end
                     str_data = str_data .. '}'
-                    local fullRS = getRenderScript(str_data)
+                    local fullRS = getRenderScript(str_data, title)
                     if fullRS:len() < 50000 then --if all can stay on screen then
                         screen.setRenderScript(fullRS)
                     end
