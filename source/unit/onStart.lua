@@ -46,7 +46,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.6.1'
+local version = '4.7.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -101,7 +101,7 @@ function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local
 --[[
 	formatting numbers by adding a space between thousands by Jericho
 ]]
-function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
+function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;local c=string.sub(b,-2)if c=='.0'then b=string.sub(b,1,b:len()-2)end;return b end
 
 core = nil
 databank = nil
@@ -260,7 +260,7 @@ function getRenderScript(data, screenTitle)
         setDefaultFillColor( front,Shape_Text,0,0,0,1)
         setDefaultFillColor( front,Shape_Box,0.075,0.125,0.156,1)
         setDefaultFillColor( front,Shape_Text,0.710,0.878,0.941,1)
-        function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;return b end
+        function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;local c=string.sub(b,-2)if c=='.0'then b=string.sub(b,1,b:len()-2)end;return b end
         function round(a,b)if b then return utils.round(a/b)*b end;return a>=0 and math.floor(a+0.5)or math.ceil(a-0.5)end
         function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local k=0;local l=0;local m=0;if a>=.5 then a=(a-0.5)*2;k=e-a*(e-h)l=f-a*(f-i)m=g-a*(g-j)else a=a*2;k=b-a*(b-e)l=c-a*(c-f)m=d-a*(d-g)end;return k,l,m end
         function renderHeader(title, subtitle)
@@ -315,7 +315,7 @@ function getRenderScript(data, screenTitle)
             setLayerTranslation(storageDark, tx, ty)
             setLayerRotation(storageDark, math.rad(r))
         end
-        function renderResistanceBar(title, quantity, volume, max, percent, item_id, x, y, w, h, withTitle, withIcon)
+        function renderResistanceBar(title, quantity, volume, max, percent, icon_path, item_id, x, y, w, h, withTitle, withIcon)
             local colorPercent = percent
             if percent > 100 then colorPercent = 100 end
             local r,g,b = getRGBGradient(colorPercent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
@@ -407,8 +407,8 @@ function getRenderScript(data, screenTitle)
                 addText(title_percent_layer, small, title_percent, rx-x, y-5)
             end
             local pos_y = y+(h/2)-2
-            if item_id and tonumber(item_id) > 0 and images[item_id] and withIcon then
-                addImage(imagesLayer, images[item_id], x+10, y+font_size*.1, font_size*1.3, font_size*1.2)
+            if icon_path and images[icon_path] then
+                addImage(imagesLayer, images[icon_path], x+10, y+font_size*.1, font_size*1.3, font_size*1.2)
             end
             setNextTextAlign(storageBar, AlignH_Left, AlignV_Middle)
             addText(storageBar, itemName, title, x+20+font_size, pos_y)
@@ -451,14 +451,14 @@ function getRenderScript(data, screenTitle)
         local loadedImages = 0
         if data ~= {} then
             for _,item in ipairs(sorted_items) do
-                if item[1] and images[item[6] ] == nil and loadedImages <= 15 then
+                if item[1] and images[item[5] ] == nil and loadedImages <= 15 then
                     loadedImages = loadedImages + 1
-                    images[item[6] ] = loadImage(item[5])
+                    images[item[5] ] = loadImage(item[5])
                 end
             end
         end
         for i,container in ipairs(sorted_items) do
-            renderResistanceBar(container[1], container[2], container[3], container[7], container[4], container[6], 44, start_h, rx-88, h, i==1, i<=16)
+            renderResistanceBar(container[1], container[2], container[3], container[7], container[4], container[5], container[6], 44, start_h, rx-88, h, i==1, i<=16)
             start_h = start_h+h+5
         end
         requestAnimationFrame(100)

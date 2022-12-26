@@ -73,15 +73,10 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `screenTitle9`: the title display on the 9th screen, not displayed if empty or equal to "-"
 - `containerProficiencyLvl`: Talent level for Container Proficiency
 - `containerOptimizationLvl`: Talent level for Container Optimization
-- `containerFillRedLevel`: The percent fill below gauge will be red
-- `containerFillYellowLevel`: The percent fill below gauge will be yellow
 - `groupByItemName`: if enabled, this will group all entries with the same item name (enabled by default)
 - `QuantityRoundedDecimals`: maximum of decimals displayed for the quantity value
 - `PercentRoundedDecimals`: maximum of decimals displayed for the percent fill value
-- `fontSize`: the size of the text for all the screen
-- `showGreen`: if not enable, line with green gauge will be hidden
-- `showYellow`: if not enable, line with yellow gauge will be hidden
-- `showRed`: if not enable, line with red gauge will be hidden
+- `fontSize`: the size of the text for all the screens
 - `maxAmountOfElementsLoadedByTick`: the maximum number of element loaded by tick of the coroutine on script startup (lower that value if you encounter cpu load errors on startup, default to 5000)
 - `maxAmountOfElementsRefreshedByTick`: the maximum number of element refreshed by tick of the coroutine when refreshing values (lower that value if you have cpu load errors after all emlements are loaded, default to 200)
 - `showVolume`: show or hide the column Volume
