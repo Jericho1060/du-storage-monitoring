@@ -46,7 +46,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.7.0'
+local version = '4.7.1'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -461,7 +461,7 @@ function getRenderScript(data, screenTitle)
             renderResistanceBar(container[1], container[2], container[3], container[7], container[4], container[5], container[6], 44, start_h, rx-88, h, i==1, i<=16)
             start_h = start_h+h+5
         end
-        requestAnimationFrame(100)
+        requestAnimationFrame(10)
     ]]
     return rs
 end
