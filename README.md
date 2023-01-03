@@ -22,10 +22,16 @@ It can support up to 9 screens and chose what is display on each (group feature)
 To add a container to the system, you must rename it following that pattern: `<prefix>_<itemId>`
 For a Hub, you must use that pattern: `<prefix>_<itemId>_<containserSize>_<amountOfContainers>`
 
-- `<prefix>`: the prefix that enable monitoring, by default `MONIT`, see options to customize it
+- `<prefix>`: the prefix that enable monitoring, by default `s1_` for the 1st screen, `s2_` for the second, and so on (see below for all options), see options to customize it
 - `<itemId>`: The ID of the item in the game database, you can search the ID of item here: https://du-lua.dev/#/items
-- `<containerSize>`: if a hub, the size of the containers linked (default to XS), valid options are `xs`, `s`, `m`, `l`, `xl`, `xxl`
-- `<amountOfContainers>`: if a hub, the amount of containers linked
+- `<containerSize>`: if a hub, the size of the containers linked (default to XS), valid options are `xs`, `s`, `m`, `l`, `xl`, `xxl` (this is not needed for containers, only for hubs)
+- `<amountOfContainers>`: if a hub, the amount of containers linked (this is not needed for containers, only for hubs)
+
+**example for coal:**
+
+The item id is `299255727` 
+- if it's for a container, you must name it `s1_299255727`
+- if it's for a hub, you must name it `s1_299255727_s_4` (4 containers of size S)
 
 By default, the script is grouping all containers or hub that contains the same items on a single line and add the values. See option if you want to disable it.
 
@@ -53,15 +59,15 @@ Copy the content of the file config.json then right clik on the board, chose adv
 By rightclicking on the board, advanced, edit lua parameters, you can customize these options:
 
 - `useDatabankValues`: if checked and if values were saved in databank, parmaters will be loaded from the databank, if not, The ones from LUA Parameters will be used. Disable this parameter if you need to update values. Unchecked by default. 
-- `PrefixScreen1`: the prefix value to add to each containers that should be monitored and display on the 1st screen. Default to `s1_`, you must keep the `_` in that option
-- `PrefixScreen2`: the prefix value to add to each containers that should be monitored and display on the 2nd screen. Default to `s2_`, you must keep the `_` in that option
-- `PrefixScreen3`: the prefix value to add to each containers that should be monitored and display on the 3rd screen. Default to `s3_`, you must keep the `_` in that option
-- `PrefixScreen4`: the prefix value to add to each containers that should be monitored and display on the 4th screen. Default to `s4_`, you must keep the `_` in that option
-- `PrefixScreen5`: the prefix value to add to each containers that should be monitored and display on the 5th screen. Default to `s5_`, you must keep the `_` in that option
-- `PrefixScreen6`: the prefix value to add to each containers that should be monitored and display on the 6th screen. Default to `s6_`, you must keep the `_` in that option
-- `PrefixScreen7`: the prefix value to add to each containers that should be monitored and display on the 7th screen. Default to `s7_`, you must keep the `_` in that option
-- `PrefixScreen8`: the prefix value to add to each containers that should be monitored and display on the 8th screen. Default to `s8_`, you must keep the `_` in that option
-- `PrefixScreen9`: the prefix value to add to each containers that should be monitored and display on the 9th screen. Default to `s9_`, you must keep the `_` in that option 
+- `PrefixScreen1`: the prefix value to add to each container that should be monitored and display on the 1st screen. Default to `s1_`, you must keep the `_` in that option
+- `PrefixScreen2`: the prefix value to add to each container that should be monitored and display on the 2nd screen. Default to `s2_`, you must keep the `_` in that option
+- `PrefixScreen3`: the prefix value to add to each container that should be monitored and display on the 3rd screen. Default to `s3_`, you must keep the `_` in that option
+- `PrefixScreen4`: the prefix value to add to each container that should be monitored and display on the 4th screen. Default to `s4_`, you must keep the `_` in that option
+- `PrefixScreen5`: the prefix value to add to each container that should be monitored and display on the 5th screen. Default to `s5_`, you must keep the `_` in that option
+- `PrefixScreen6`: the prefix value to add to each container that should be monitored and display on the 6th screen. Default to `s6_`, you must keep the `_` in that option
+- `PrefixScreen7`: the prefix value to add to each container that should be monitored and display on the 7th screen. Default to `s7_`, you must keep the `_` in that option
+- `PrefixScreen8`: the prefix value to add to each container that should be monitored and display on the 8th screen. Default to `s8_`, you must keep the `_` in that option
+- `PrefixScreen9`: the prefix value to add to each container that should be monitored and display on the 9th screen. Default to `s9_`, you must keep the `_` in that option 
 - `screenTitle1`: the title display on the 1st screen, not displayed if empty or equal to "-"
 - `screenTitle2`: the title display on the 2nd screen, not displayed if empty or equal to "-"
 - `screenTitle3`: the title display on the 3rd screen, not displayed if empty or equal to "-"
