@@ -27,18 +27,20 @@ containerProficiencyLvl = 5 --export: Talent level for Container Proficiency
 containerOptimizationLvl = 5 --export: Talent level for Container Optimization
 groupByItemName = true --export: if enabled, this will group all entries with the same item name
 
+VolumeRoundedDecimals = 2 --export: maximum of decimals displayed for the volume value
 QuantityRoundedDecimals = 2 --export: maximum of decimals displayed for the quantity value
 PercentRoundedDecimals = 2 --export: maximum of decimals displayed for the percent fill value
 fontSize = 15 --export: the size of the text for all the screen
 maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
 
+showTierOnName = true --export: show the tier of the item with the item name
 showVolume = true --export: show or hide the column Volume
-volumePosition= 50 --export: the position in percent of width for the column Volume
+volumePosition= 55 --export: the position in percent of width for the column Volume
 showQuantity = true --export: show or hide the column Quantity
 quantityPosition= 75 --export: the position in percent of width for the column Quantity
 
-verticalMode = false --export: rotate the screen 90deg (bottom on right)
+verticalMode = true --export: rotate the screen 90deg (bottom on right)
 verticalModeBottomSide = "right" --export: when vertical mode is enabled, on which side the bottom of the screen is positioned ("left" or "right")
 defaultSorting = "none" --export: the default sorting of items on the screen: "none": like in the container, "items-asc": ascending sorting on the name, "items-desc": descending sorting on the name, "quantity-asc": ascending on the quantity, "quantity-desc": descending on the quantity, "percent-asc": ascending on the percent fill, "percent-desc": descending on the percent fill
 
@@ -46,7 +48,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.7.1'
+local version = '4.8.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -74,6 +76,7 @@ options.screenTitle9 = screenTitle9
 options.container_proficiency_lvl = containerProficiencyLvl
 options.container_optimization_lvl = containerOptimizationLvl
 options.groupByItemName = groupByItemName
+options.VolumeRoundedDecimals = VolumeRoundedDecimals
 options.QuantityRoundedDecimals = QuantityRoundedDecimals
 options.PercentRoundedDecimals = PercentRoundedDecimals
 options.fontSize = fontSize
@@ -82,6 +85,7 @@ options.maxAmountOfElementsRefreshedByTick = maxAmountOfElementsRefreshedByTick
 options.showVolume = showVolume
 options.volumePosition = volumePosition
 options.showQuantity = showQuantity
+options.showTierOnName = showTierOnName
 options.quantityPosition = quantityPosition
 options.verticalMode = verticalMode
 options.verticalModeBottomSide = verticalModeBottomSide
@@ -217,7 +221,7 @@ function getRenderScript(data, screenTitle)
     ]]
     if data == nil then
         rs = rs .. [[if data ~= {} and data ~= nil then
-            items[data[11] ] = {data[1],data[2],data[3],data[4],data[5],data[8],data[10]}
+            items[data[11] ] = {data[1],data[2],data[3],data[4],data[5],data[8],data[10],data[12]}
             setOutput(#items)
             data = nil
         end
@@ -261,7 +265,7 @@ function getRenderScript(data, screenTitle)
         setDefaultFillColor( front,Shape_Box,0.075,0.125,0.156,1)
         setDefaultFillColor( front,Shape_Text,0.710,0.878,0.941,1)
         function format_number(a)local b=a;while true do b,k=string.gsub(b,"^(-?%d+)(%d%d%d)",'%1 %2')if k==0 then break end end;local c=string.sub(b,-2)if c=='.0'then b=string.sub(b,1,b:len()-2)end;return b end
-        function round(a,b)if b then return utils.round(a/b)*b end;return a>=0 and math.floor(a+0.5)or math.ceil(a-0.5)end
+        function round(a,b)if b==nil then b=0 end;return math.floor(a*10^b+0.5)/10^b end
         function getRGBGradient(a,b,c,d,e,f,g,h,i,j)a=-1*math.cos(a*math.pi)/2+0.5;local k=0;local l=0;local m=0;if a>=.5 then a=(a-0.5)*2;k=e-a*(e-h)l=f-a*(f-i)m=g-a*(g-j)else a=a*2;k=b-a*(b-e)l=c-a*(c-f)m=d-a*(d-g)end;return k,l,m end
         function renderHeader(title, subtitle)
             local h_factor = 12
@@ -315,7 +319,7 @@ function getRenderScript(data, screenTitle)
             setLayerTranslation(storageDark, tx, ty)
             setLayerRotation(storageDark, math.rad(r))
         end
-        function renderResistanceBar(title, quantity, volume, max, percent, icon_path, item_id, x, y, w, h, withTitle, withIcon)
+        function renderResistanceBar(title, tier, quantity, volume, max, percent, icon_path, item_id, x, y, w, h, withTitle, withIcon)
             local colorPercent = percent
             if percent > 100 then colorPercent = 100 end
             local r,g,b = getRGBGradient(colorPercent/100,177/255,42/255,42/255,249/255,212/255,123/255,34/255,177/255,76/255)
@@ -411,12 +415,22 @@ function getRenderScript(data, screenTitle)
                 addImage(imagesLayer, images[icon_path], x+10, y+font_size*.1, font_size*1.3, font_size*1.2)
             end
             setNextTextAlign(storageBar, AlignH_Left, AlignV_Middle)
-            addText(storageBar, itemName, title, x+20+font_size, pos_y)
+            local n = title
+            if ]] .. tostring(showTierOnName) .. [[ then
+                n = 'T' .. tier .. ' / ' .. n
+            end
+            addText(storageBar, itemName, n, x+20+font_size, pos_y)
             setNextFillColor(colorLayer, r, g, b, 1)
             addBox(colorLayer,x,y+h-3,w*(colorPercent)/100,3)
             if ]] .. tostring(options.showVolume) .. [[ then
                 setNextTextAlign(storageDark, AlignH_Center, AlignV_Middle)
-                addText(storageDark, itemName, format_number(volume) .. ' L /' .. format_number(max) .. ' L', x+(w*]] .. tostring(options.volumePosition/100) .. [[), pos_y)
+                local unit = 'L'
+                if max >= 100000 then
+                    max = round(max/1000,]] .. options.VolumeRoundedDecimals .. [[)
+                    volume = round(volume/1000, ]] .. options.VolumeRoundedDecimals .. [[)
+                    unit='kL'
+                end
+                addText(storageDark, itemName, format_number(volume) .. ' ' .. unit .. ' / ' .. format_number(max) .. ' ' .. unit, x+(w*]] .. tostring(options.volumePosition/100) .. [[), pos_y)
             end
             if ]] .. tostring(options.showQuantity) .. [[ then
                 setNextTextAlign(storageBar, AlignH_Center, AlignV_Middle)
@@ -458,7 +472,7 @@ function getRenderScript(data, screenTitle)
             end
         end
         for i,container in ipairs(sorted_items) do
-            renderResistanceBar(container[1], container[2], container[3], container[7], container[4], container[5], container[6], 44, start_h, rx-88, h, i==1, i<=16)
+            renderResistanceBar(container[1], container[8], container[2], container[3], container[7], container[4], container[5], container[6], 44, start_h, rx-88, h, i==1, i<=16)
             start_h = start_h+h+5
         end
         requestAnimationFrame(10)
@@ -662,7 +676,8 @@ MyCoroutines = {
                                     container.ingredient.id,
                                     screens_displayed,
                                     utils.round(container.maxvolume),
-                                    i
+                                    i,
+                                    container.ingredient.tier,
                                 }
                                 table.insert(items_data_for_screen,storage_data)
                                 local to_send=json.encode(storage_data)
@@ -677,7 +692,7 @@ MyCoroutines = {
                     end
                     local str_data = '{'
                     for i,v in ipairs(items_data_for_screen) do
-                        str_data = str_data .. '{"' .. tostring(v[1]) .. '",' .. tostring(v[2]) .. ',' .. tostring(v[3]) .. ',' .. tostring(v[4]) .. ',"' .. tostring(v[5]) .. '",' .. tostring(v[8]) .. ',' .. tostring(v[10]) .. '}'
+                        str_data = str_data .. '{"' .. tostring(v[1]) .. '",' .. tostring(v[2]) .. ',' .. tostring(v[3]) .. ',' .. tostring(v[4]) .. ',"' .. tostring(v[5]) .. '",' .. tostring(v[8]) .. ',' .. tostring(v[10]) .. ',' .. tostring(v[12]) .. '}'
                         if i < #items_data_for_screen then str_data = str_data .. ',' end
                     end
                     str_data = str_data .. '}'

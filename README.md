@@ -80,11 +80,13 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `containerProficiencyLvl`: Talent level for Container Proficiency
 - `containerOptimizationLvl`: Talent level for Container Optimization
 - `groupByItemName`: if enabled, this will group all entries with the same item name (enabled by default)
+- `VolumeRoundedDecimals`: maximum of decimals displayed for the volume value
 - `QuantityRoundedDecimals`: maximum of decimals displayed for the quantity value
 - `PercentRoundedDecimals`: maximum of decimals displayed for the percent fill value
 - `fontSize`: the size of the text for all the screens
 - `maxAmountOfElementsLoadedByTick`: the maximum number of element loaded by tick of the coroutine on script startup (lower that value if you encounter cpu load errors on startup, default to 5000)
 - `maxAmountOfElementsRefreshedByTick`: the maximum number of element refreshed by tick of the coroutine when refreshing values (lower that value if you have cpu load errors after all emlements are loaded, default to 200)
+- `showTierOnName`: show the tier of the item with the item name
 - `showVolume`: show or hide the column Volume
 - `volumePosition`: the position in percent of width for the column Volume
 - `showQuantity`: show or hide the column Quantity
