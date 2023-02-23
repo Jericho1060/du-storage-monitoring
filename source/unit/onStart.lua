@@ -34,6 +34,12 @@ fontSize = 15 --export: the size of the text for all the screen
 maxAmountOfElementsLoadedByTick = 5000 --export: the maximum number of element loaded by tick of the coroutine on script startup
 maxAmountOfElementsRefreshedByTick = 200 --export: the maximum number of element refreshed by tick of the coroutine when refreshing values
 
+showTierColors=true --export: show a diffenrent color for each tier (https://du-lua.dev/#/utils for help on the color values)
+T1Color= '0.43,0.65,0.71' --export: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
+T2Color= '0.14,0.7,0.3' --export: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
+T3Color= '0.26,0.63,1' --export: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
+T4Color= '0.66,0.28,0.66' --export: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
+T5Color= '1,0.62,0.24' --export: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
 showTierOnName = true --export: show the tier of the item with the item name
 showVolume = true --export: show or hide the column Volume
 volumePosition= 55 --export: the position in percent of width for the column Volume
@@ -48,7 +54,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.8.0'
+local version = '4.9.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -86,6 +92,12 @@ options.showVolume = showVolume
 options.volumePosition = volumePosition
 options.showQuantity = showQuantity
 options.showTierOnName = showTierOnName
+options.showTierColors = showTierColors
+options.T1Color = T1Color
+options.T2Color = T2Color
+options.T3Color = T3Color
+options.T4Color = T4Color
+options.T5Color = T5Color
 options.quantityPosition = quantityPosition
 options.verticalMode = verticalMode
 options.verticalModeBottomSide = verticalModeBottomSide
@@ -416,9 +428,24 @@ function getRenderScript(data, screenTitle)
             end
             setNextTextAlign(storageBar, AlignH_Left, AlignV_Middle)
             local n = title
-            if ]] .. tostring(showTierOnName) .. [[ then
+            if ]] .. tostring(options.showTierOnName) .. [[ then
                 n = 'T' .. tier .. ' / ' .. n
-            end
+            end]]
+    if options.showTierColors then
+        rs = rs .. [[
+                if tier == 1 then
+                    setNextFillColor(storageBar, ]] .. options.T1Color .. [[, 1)
+                elseif tier == 2 then
+                    setNextFillColor(storageBar, ]] .. options.T2Color .. [[, 1)
+                elseif tier == 3 then
+                    setNextFillColor(storageBar, ]] .. options.T3Color .. [[, 1)
+                elseif tier == 4 then
+                    setNextFillColor(storageBar, ]] .. options.T4Color .. [[, 1)
+                elseif tier == 5 then
+                    setNextFillColor(storageBar, ]] .. options.T5Color .. [[, 1)
+                end]]
+    end
+    rs = rs .. [[
             addText(storageBar, itemName, n, x+20+font_size, pos_y)
             setNextFillColor(colorLayer, r, g, b, 1)
             addBox(colorLayer,x,y+h-3,w*(colorPercent)/100,3)
@@ -642,13 +669,14 @@ MyCoroutines = {
             tiers[4] = {} --tier 3
             tiers[5] = {} --tier 4
             tiers[6] = {} --tier 5
+
             for _,v in pairs(groupped) do
                 table.insert(tiers[v.ingredient.tier+1],v)
             end
 
             -- sorting by name
             for k,v in pairs(tiers) do
-                table.sort(tiers[k], function(a,b) return a.ingredient.name:lower() < b.ingredient.name:lower() end)
+                table.sort(tiers[k], function(a,b) return a.ingredient.locDisplayNameWithSize:lower() < b.ingredient.locDisplayNameWithSize:lower() end)
             end
 
             if #screens > 0 and not screens_displayed then

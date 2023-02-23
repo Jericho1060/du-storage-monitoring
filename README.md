@@ -86,6 +86,12 @@ By rightclicking on the board, advanced, edit lua parameters, you can customize 
 - `fontSize`: the size of the text for all the screens
 - `maxAmountOfElementsLoadedByTick`: the maximum number of element loaded by tick of the coroutine on script startup (lower that value if you encounter cpu load errors on startup, default to 5000)
 - `maxAmountOfElementsRefreshedByTick`: the maximum number of element refreshed by tick of the coroutine when refreshing values (lower that value if you have cpu load errors after all emlements are loaded, default to 200)
+- `showTierColors`: show a diffenrent color for each tier (https://du-lua.dev/#/utils for help on the color values)
+- `T1Color`: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
+- `T2Color`: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
+- `T3Color`: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
+- `T4Color`: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
+- `T5Color`: the rgb values for the T2 color (https://du-lua.dev/#/utils for help on the color values)
 - `showTierOnName`: show the tier of the item with the item name
 - `showVolume`: show or hide the column Volume
 - `volumePosition`: the position in percent of width for the column Volume
