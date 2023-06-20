@@ -54,7 +54,7 @@ defaultSorting = "none" --export: the default sorting of items on the screen: "n
 	INIT
 ]]
 
-local version = '4.9.0'
+local version = '4.10.0'
 
 system.print("----------------------------------")
 system.print("DU-Storage-Monitoring version " .. version)
@@ -210,7 +210,7 @@ function getRenderScript(data, screenTitle)
     if sorting == nil then sorting = ]] .. sorting .. [[ end
     ]]
     if data == nil then
-        rs = rs .. [[local json = require('dkjson')
+        rs = rs .. [[local json = require('json')
         local input = getInput() or json.encode(nil)
         local data = json.decode(input)
         if data ~= nil and data[7] then
@@ -349,6 +349,7 @@ function getRenderScript(data, screenTitle)
                     elseif sorting == 2 then
                         title_item_width = 95
                         title_item = 'ITEMS - DESC'
+        
                     end
                     title_item_layer = buttonHover
                 end
@@ -406,6 +407,7 @@ function getRenderScript(data, screenTitle)
                     elseif sorting == 6 then
                         title_percent_width = 115
                         title_percent = 'STORAGE - DESC'
+        
                     end
                     title_percent_layer = buttonHover
                 end
@@ -431,8 +433,8 @@ function getRenderScript(data, screenTitle)
             if ]] .. tostring(options.showTierOnName) .. [[ then
                 n = 'T' .. tier .. ' / ' .. n
             end]]
-    if options.showTierColors then
-        rs = rs .. [[
+            if options.showTierColors then
+                rs = rs .. [[
                 if tier == 1 then
                     setNextFillColor(storageBar, ]] .. options.T1Color .. [[, 1)
                 elseif tier == 2 then
@@ -444,8 +446,8 @@ function getRenderScript(data, screenTitle)
                 elseif tier == 5 then
                     setNextFillColor(storageBar, ]] .. options.T5Color .. [[, 1)
                 end]]
-    end
-    rs = rs .. [[
+            end
+            rs = rs .. [[
             addText(storageBar, itemName, n, x+20+font_size, pos_y)
             setNextFillColor(colorLayer, r, g, b, 1)
             addBox(colorLayer,x,y+h-3,w*(colorPercent)/100,3)
@@ -642,7 +644,7 @@ MyCoroutines = {
                     coroutine.yield(coroutinesTable[2])
                 end
             end
-
+    
             -- group by name and screen
             local groupped = {}
             if groupByItemName then
@@ -660,7 +662,7 @@ MyCoroutines = {
             else
                 groupped = storage_elements
             end
-
+    
             -- sorting by tier
             local tiers = {}
             tiers[1] = {} --tier 0 (thx to Belorion#3127 for pointing Oxygen and Hydrogen are Tier 0 and not 1)
@@ -669,16 +671,16 @@ MyCoroutines = {
             tiers[4] = {} --tier 3
             tiers[5] = {} --tier 4
             tiers[6] = {} --tier 5
-
+            
             for _,v in pairs(groupped) do
                 table.insert(tiers[v.ingredient.tier+1],v)
             end
-
+    
             -- sorting by name
             for k,v in pairs(tiers) do
                 table.sort(tiers[k], function(a,b) return a.ingredient.locDisplayNameWithSize:lower() < b.ingredient.locDisplayNameWithSize:lower() end)
             end
-
+            
             if #screens > 0 and not screens_displayed then
                 for index, screen in pairs(screens) do
                     local prefix = prefixes[index]
@@ -726,7 +728,7 @@ MyCoroutines = {
                     str_data = str_data .. '}'
                     local fullRS = getRenderScript(str_data, title)
                     if fullRS:len() < 50000 then --if all can stay on screen then
-                        screen.setRenderScript(fullRS)
+                        screen.setRenderScript(fullRS) 
                     end
                 end
                 screens_displayed = true
