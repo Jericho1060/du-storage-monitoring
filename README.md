@@ -11,6 +11,10 @@ a simple storage monitoring for Dual Universe
 
 You can join me on Guilded for help or suggestions or requests by following that link : https://guilded.jericho.dev
 
+# Discord Server
+
+You can join me on Discord for help or suggestions or requests by following that link : https://discord.gg/qkdjyqDZQZ
+
 # Description
 
 ### WARNING: Breaking changes from v3.x - that script is now using the item id and not anymore the item name, read the container name pattern doc to know how to find it if you are looking for the v3.x version, you can still find it here: https://github.com/jericho1060/du-storage-monitoring/tree/v3.x but it won't be updated anymore
